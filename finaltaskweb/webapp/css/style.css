@@ -1,0 +1,175 @@
+@charset "UTF-8";
+
+html, body {
+	height: 100%
+}
+
+.index {
+	background-image: url('../img/dance7.jpeg');
+	background-size: cover;
+}
+
+.wrapper {
+	position: relative;
+	min-height: 100%;
+}
+
+.title {
+	margin-top: 80px;
+	margin-bottom: 30px;
+	margin-right: 45px;
+	color: #596673;
+}
+
+.subtitle {
+	color: #596673;
+	text-align: center;
+	font: bold;
+	justify-content: center;
+	margin-bottom: 15px;
+	margin-top: 15px;
+}
+
+.form-group {
+	text-decoration: none;
+	letter-spacing: 1px;
+	font-size: 14px;
+	color: white;
+	text-align: left;
+	font-family: Helvetica Neue;
+	align-items: center;
+}
+
+.form-check-input {
+	text-decoration: none;
+	font-size: 14px;
+	text-align: left;
+	font-family: Helvetica Neue;
+	display: inline-block;
+}
+
+.loginformBtn {
+	width: 170px;
+	height: 50px;
+	margin: 0px 5px;
+	color: #5c5c5c;
+	font-family: Helvetica Neue;
+	background: #596673;
+}
+
+.clientMenuBtn {
+	width: 210px;
+	height: 100x;
+	text-align: left;
+	margin-top: 10px;
+	color: #596673;
+	background: #94a0ac;
+}
+
+.colorBtn {
+	background: #d3d3e9;
+	margin-top: 10px;
+}
+
+.welcomeMessage {
+	text-align: right;
+	color: #596673;
+	margin: 10px;
+}
+
+nav {
+	background: #596673;
+	color: white;
+}
+
+.btn {
+	color: white;
+	outline: 0;
+	border: none;
+}
+
+.card {
+	background: #94a0ac;
+	height: 250px;
+	text-align: center;
+	padding: 10px;
+}
+
+.card-header {
+	font-size: 24px;
+	color: white;
+}
+
+.card-body {
+	background: white;
+}
+
+.text-small {
+	color: white;
+	font-family: Helvetica Neue;
+}
+
+.footer {
+	left: 0;
+	width: 100%;
+	text-align: center;
+	font-size: 10px;
+	position: absolute;
+	bottom: 0;
+	height: 20px;
+	background-color: #d3d3e9;
+}
+
+table {
+	border-collapse: collapse;
+	color: #686868;
+	margin: 10px 10px 10px 10px;
+	width: 95%;
+	height: 65%;
+	border-color: white
+}
+
+.badge {
+	width: 60px;
+	height: 20px;
+	text-align: center;
+	background: #d3d3e9;
+}
+
+th {
+	text-align: center;
+	color: white;
+	background: #94a0ac;
+	font-size: 18px;
+	border-color: white;
+	font: bold;
+}
+
+td {
+	padding: 2px;
+	text-align: center;
+	border-color: white;
+}
+
+.page-link {
+	color: #596673;
+}
+
+.active {
+	background: #d3d3e9;
+}
+
+a.link {
+	font: italic;
+	font-size: 12px;
+}
+
+p.error {
+	color: red;
+	font-size: 18px;
+}
+
+p.success {
+	color: #0000ff;
+	font-size: 18px;
+}
