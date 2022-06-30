@@ -36,5 +36,4 @@ MySQL, Servlet и JSP (в т.ч. теги библиотеки JSTL), Bootstrap4
 +	Просмотр длинного списка клиентов реализован в постраничном режиме (clients.jsp)
 <a name="схема"></a>
 # Схема БД 
-<p align="center"><img  src="finaltaskweb/readme_img/1.png"></p>
-
+<p align="center"><img  src="finaltaskweb/readme_img/1.PNG"></p>
