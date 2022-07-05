@@ -88,10 +88,10 @@ public class ReadUserByLoginAndPasswordTest {
 
 	public void testReadByLoginAndPassword(String login, String password, User expected) throws DaoException {
 
-	
 		Connection connection = ConnectionPool.getInstance().getConnection();
 		TransactionImpl transaction = new TransactionImpl(connection);
 		DaoFactory factory = DaoFactory.getInstance();
+	
 		User  actual = factory.getUserDao(transaction).readByLoginAndPassword (login, password);
 		assertEquals(actual, expected);
 	}

@@ -2,11 +2,19 @@ package by.jwd.finaltaskweb.controller;
 
 import java.util.ResourceBundle;
 
+
+/**
+ * ConfigurationManager invokes information from the file config.properties
+ * 
+ * 
+ * @author Evlashkina
+ *
+ */
+
 public class ConfigurationManager {
 
-	private final static ResourceBundle resourceBundle = ResourceBundle.getBundle("config");
+	private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("config");
 
-	// класс извлекает информацию из файла config.properties
 	private ConfigurationManager() {
 	}
 

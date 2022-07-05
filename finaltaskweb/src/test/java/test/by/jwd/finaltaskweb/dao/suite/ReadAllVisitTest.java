@@ -14,6 +14,7 @@ import org.testng.annotations.Test;
 
 import by.jwd.finaltaskweb.dao.DaoException;
 import by.jwd.finaltaskweb.dao.DaoFactory;
+import by.jwd.finaltaskweb.dao.TransactionImpl;
 import by.jwd.finaltaskweb.dao.pool.ConnectionPool;
 import by.jwd.finaltaskweb.entity.DanceClass;
 import by.jwd.finaltaskweb.entity.Membership;
@@ -84,8 +85,9 @@ public class ReadAllVisitTest {
 		expected.add(visit5);
 					
 		Connection connection = ConnectionPool.getInstance().getConnection();
-		DaoFactory factory = new DaoFactory (connection);
-		List <Visit> actual = factory.getVisitDao().readAll();
+		TransactionImpl transaction = new TransactionImpl(connection);
+		DaoFactory factory = DaoFactory.getInstance();
+		List <Visit> actual = factory.getVisitDao(transaction).readAll();
 		assertEquals(actual, expected);
 	}
 }

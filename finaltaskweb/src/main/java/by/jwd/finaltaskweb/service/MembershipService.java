@@ -20,11 +20,5 @@ public interface MembershipService extends StudioService <Integer, Membership>{
 	
 	public List<MembershipType> readAllTypes() throws ServiceException;
 	
-	public MembershipType readTypeById (Integer id) throws ServiceException;
-
-	//public boolean deleteType(Integer id) throws ServiceException;
-
-	//public boolean createType(MembershipType type) throws ServiceException;
-
-	//public boolean updateType(MembershipType type) throws ServiceException;
+	public MembershipType readTypeById (Integer id) throws ServiceException;	
 }

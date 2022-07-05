@@ -70,10 +70,11 @@ public class Schedule extends Entity{
 		sb.append("\n").append(super.toString());
 		sb.append("\nweekday: ").append(weekday);
 		sb.append("\ntime: ").append(time);
-		sb.append("\ngroup id: ").append(group.getId());
-		sb.append("\ngroup title: ").append(group.getTitle());
-		sb.append("\ngroup level: ").append(group.getLevel());
-		sb.append("\ngroup teacher: ").append(group.getTeacher());
+		sb.append("\ngroup: ").append(group);
+//		sb.append("\ngroup id: ").append(group.getId());
+//		sb.append("\ngroup title: ").append(group.getTitle());
+//		sb.append("\ngroup level: ").append(group.getLevel());
+//		sb.append("\ngroup teacher: ").append(group.getTeacher());
 		sb.append("\nduration: ").append(duration);
 		return sb.toString();
 	}

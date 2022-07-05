@@ -2,15 +2,14 @@ package by.jwd.finaltaskweb.controller.impl;
 
 import java.time.LocalDate;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.jwd.finaltaskweb.controller.Command;
 import by.jwd.finaltaskweb.controller.ConfigurationManager;
 import by.jwd.finaltaskweb.controller.MessageManager;
+import by.jwd.finaltaskweb.controller.PageResult;
+import by.jwd.finaltaskweb.controller.SessionRequestContent;
 import by.jwd.finaltaskweb.entity.DanceClass;
 import by.jwd.finaltaskweb.service.ServiceException;
 import by.jwd.finaltaskweb.service.ServiceFactory;
@@ -29,57 +28,41 @@ public class CancelUpdateStatusCommandImpl implements Command {
 	private ServiceFactory factory = ServiceFactory.getInstance();
 
 	@Override
-	public String execute(HttpServletRequest request) {
-
-		String page = null;
-		HttpSession session = request.getSession(true);
-		String language = session.getAttribute("language").toString();
+	public PageResult execute(SessionRequestContent content) {
+		
+		PageResult result = null;
+		
+		String language = (String) content.getSessionAttribute("language");
 		logger.debug("language {}", language);
-
-		MessageManager manager;
-
-		switch (language) {
-		case "en", "en_US":
-			manager = MessageManager.EN;
-			break;
-		case "ru", "ru_RU":
-			manager = MessageManager.RU;
-			break;
-		case "be", "be_BY":
-			manager = MessageManager.BY;
-			break;
-		default:
-			manager = MessageManager.EN;
-		}
-		Integer teacherId = (Integer) session.getAttribute("teacherId");
+	
+		Integer teacherId = (Integer)(content.getSessionAttribute ("teacherId"));
 		logger.debug("teacher id {}", teacherId);
+		
+		Integer visitId = Integer.parseInt(content.getRequestParameter ("visitId"));
+		logger.debug("visit id {}", visitId);
 
 		try {
-			if (teacherId == null) {
-				request.setAttribute("errorNoSession", manager.getProperty("errorNoSession"));
-				logger.debug("session timed out");
-			} else {
-				if (request.getParameter("visitId") != null) {
-					session.setAttribute("visitId", request.getParameter("visitId"));
-					
-				}
-				Integer visitId = Integer.parseInt((String) session.getAttribute("visitId"));
-				logger.debug("visit id {}", visitId);
-
+			if (teacherId != null && visitId != null) {
+				
 				factory.getVisitService().cancelMarkPresence(visitId);
-				
-				Integer groupId = Integer.parseInt((String)session.getAttribute("groupId"));
-				LocalDate date = LocalDate.parse((String)session.getAttribute("visitDate"));
+								
+				Integer groupId = Integer.parseInt((String) content.getSessionAttribute("groupId"));
+				logger.debug("group id {}", groupId);
+				LocalDate date = LocalDate.parse((String)content.getSessionAttribute("visitDate"));
+				logger.debug("visitDate {}", date);
 				DanceClass danceClass = factory.getDanceClassService().readByDateAndGroup(date, groupId);
-				session.setAttribute("danceClass", danceClass);
 				
+				content.setSessionAttribute("danceClass", danceClass);
+				
+			
+			result = new PageResult (ConfigurationManager.getProperty("path.page.visitsByTeacherSecondStep"), true);
 			}
-			page = ConfigurationManager.getProperty("path.page.visitsByTeacher2");
+			
 		} catch (ServiceException e) {
-			request.setAttribute("errorMessage", manager.getProperty("errorMessage"));
-			page = ConfigurationManager.getProperty("path.page.error");
+			content.setRequestParameter("errorMessage", MessageManager.getProperty("errorMessage", language));
+			result = new PageResult (ConfigurationManager.getProperty("path.page.error"), false);
 		}
-
-		return page;
+        
+		return result;
 	}
 }

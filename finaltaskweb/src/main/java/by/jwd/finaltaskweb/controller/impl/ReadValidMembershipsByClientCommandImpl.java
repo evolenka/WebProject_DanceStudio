@@ -2,19 +2,25 @@ package by.jwd.finaltaskweb.controller.impl;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.jwd.finaltaskweb.controller.Command;
 import by.jwd.finaltaskweb.controller.ConfigurationManager;
 import by.jwd.finaltaskweb.controller.MessageManager;
+import by.jwd.finaltaskweb.controller.PageResult;
+import by.jwd.finaltaskweb.controller.SessionRequestContent;
 import by.jwd.finaltaskweb.entity.Membership;
 import by.jwd.finaltaskweb.service.ServiceException;
 import by.jwd.finaltaskweb.service.ServiceFactory;
 
+/**
+ * ReadValidMembershipsByClientCommandImpl implements command for viewing by
+ * client all his valid memberships
+ * 
+ * @author Evlashkina
+ *
+ */
 public class ReadValidMembershipsByClientCommandImpl implements Command {
 
 	private static Logger logger = LogManager.getLogger(ReadValidMembershipsByClientCommandImpl.class);
@@ -22,76 +28,50 @@ public class ReadValidMembershipsByClientCommandImpl implements Command {
 	private ServiceFactory factory = ServiceFactory.getInstance();
 
 	@Override
-	public String execute(HttpServletRequest request) {
+	public PageResult execute(SessionRequestContent content) {
 
-		String page = null;
-		List<Membership> validMemberships;
+		PageResult result = null;
 
-		HttpSession session = request.getSession(true);
-		String language = (String) session.getAttribute("language");
+		String language = (String) content.getSessionAttribute("language");
 		logger.debug("language {}", language);
 
-		MessageManager manager;
+		Integer clientId = (Integer)(content.getSessionAttribute("clientId"));
+		logger.debug("clientId {}", clientId);
 
-		switch (language) {
-		case "en", "en_US":
-			manager = MessageManager.EN;
-			break;
-		case "ru", "ru_RU":
-			manager = MessageManager.RU;
-			break;
-		case "be", "be_BY":
-			manager = MessageManager.BY;
-			break;
-		default:
-			manager = MessageManager.EN;
-		}
-
-		Integer clientId = (Integer) session.getAttribute("clientId");
+		String page = content.getRequestParameter("page");
+		logger.debug("page {}", page);
 
 		try {
-			if (clientId == null) {
-				request.setAttribute("errorNoSession", manager.getProperty("errorNoSession"));
-				logger.debug("session timed out");
+			if (clientId != null) {
 
-				session.setAttribute("isCheckedValid", true);
-				logger.debug("isCheckedValid {}", session.getAttribute("isCheckedValid"));
+				content.setSessionAttribute("isCheckedValid", true);
 
-			} else {
-				
-				if (request.getParameter("groupId") != null) {
-					session.setAttribute(("groupId"), request.getParameter("groupId"));
-				}
-
-				validMemberships = factory.getMembershipService().readValidByClient(clientId);
+				List<Membership> validMemberships = factory.getMembershipService().readValidByClient(clientId);
 				logger.debug("valid memberships {}", validMemberships);
 
-				if (validMemberships.isEmpty()) {
-					logger.debug("no valid memberships");
-					request.setAttribute("myMemberships.noMembership",
-							manager.getProperty("myMemberships.noMembership"));
+				if (!validMemberships.isEmpty()) {
+					content.setSessionAttribute("memberships", validMemberships);
 				} else {
-					session.setAttribute("memberships", validMemberships);
-
+					logger.debug("no valid memberships");
+					content.setSessionAttribute("noMemberships",
+							MessageManager.getProperty("myMemberships.noMembership", language));
 				}
 			}
-			if (request.getParameter("page") != null) {
-				session.setAttribute("page", request.getParameter("page"));
+
+			if (content.getRequestParameter("groupId") !=null) {
+				content.setSessionAttribute("groupId", content.getRequestParameter("groupId"));
+				logger.debug("groupId {}", content.getRequestParameter("groupId")); 
 			}
+			if (page != null && "myMemberships".equals(page)) {
+				result = new PageResult(ConfigurationManager.getProperty("path.page.myMemberships"), false);
 
-			if (session.getAttribute("page").equals("myMemberships")) {
-
-				page = ConfigurationManager.getProperty("path.page.myMemberships");
-				logger.debug("page - myMemberships");
 			} else {
-				page = ConfigurationManager.getProperty("path.page.enrollment3");
-				logger.debug("page - enrollment3");
-
+				result = new PageResult(ConfigurationManager.getProperty("path.page.enrollmentThirdStep"), false);
 			}
 		} catch (ServiceException e) {
-			page = ConfigurationManager.getProperty("path.page.error");
-			request.setAttribute("errorMessage", manager.getProperty("errorMessage"));
+			content.setRequestParameter("errorMessage", MessageManager.getProperty("errorMessage", language));
+			result = new PageResult(ConfigurationManager.getProperty("path.page.error"), false);
 		}
-		return page;
+		return result;
 	}
 }

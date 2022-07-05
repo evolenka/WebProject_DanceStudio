@@ -8,6 +8,15 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
+/**
+ * InfoYearTag class provides handling of the custom tag which returns current
+ * year
+ * 
+ * @author Evlashkina
+ *
+ */
+
+
 @SuppressWarnings("serial")
 public class InfoYearTag  extends TagSupport {
 		

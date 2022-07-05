@@ -15,6 +15,7 @@ import org.testng.annotations.Test;
 
 import by.jwd.finaltaskweb.dao.DaoException;
 import by.jwd.finaltaskweb.dao.DaoFactory;
+import by.jwd.finaltaskweb.dao.TransactionImpl;
 import by.jwd.finaltaskweb.dao.pool.ConnectionPool;
 import by.jwd.finaltaskweb.entity.Group;
 import by.jwd.finaltaskweb.entity.Schedule;
@@ -103,8 +104,9 @@ public class ReadAllScheduleTest {
 		expected.add(schedule7);
 			
 		Connection connection = ConnectionPool.getInstance().getConnection();
-		DaoFactory factory = new DaoFactory (connection);
-		List <Schedule> actual = factory.getScheduleDao().readAll();
+		TransactionImpl transaction = new TransactionImpl(connection);
+		DaoFactory factory = DaoFactory.getInstance();
+		List <Schedule> actual = factory.getScheduleDao(transaction).readAll();
 		assertEquals(actual, expected);
 	}
 }

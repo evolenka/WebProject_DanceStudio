@@ -231,7 +231,7 @@ public class VisitServiceImpl extends StudioServiceImpl implements VisitService 
 
 		try {
 
-			List<Membership> memberships = factory.getMembershipDao(transaction).readValidByClient(clientId);
+			List<Membership> memberships = factory.getMembershipDao(transaction).readByClient(clientId);
 
 			List<DanceClass> danceClasses = factory.getDanceClassDao(transaction).readByPeriod(startDate, endDate);
 

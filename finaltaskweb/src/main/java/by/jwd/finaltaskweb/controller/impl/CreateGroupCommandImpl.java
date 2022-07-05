@@ -4,15 +4,14 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.jwd.finaltaskweb.controller.Command;
 import by.jwd.finaltaskweb.controller.ConfigurationManager;
 import by.jwd.finaltaskweb.controller.MessageManager;
+import by.jwd.finaltaskweb.controller.PageResult;
+import by.jwd.finaltaskweb.controller.SessionRequestContent;
 import by.jwd.finaltaskweb.entity.Group;
 import by.jwd.finaltaskweb.entity.Level;
 import by.jwd.finaltaskweb.entity.Schedule;
@@ -22,7 +21,7 @@ import by.jwd.finaltaskweb.service.ServiceException;
 import by.jwd.finaltaskweb.service.ServiceFactory;
 
 /**
- * GroupRegistrationCommandImpl implements command for adding new group by admin
+ * CreateGroupCommandImpl implements command for creating new group by admin
  * 
  * @author Evlashkina
  *
@@ -34,80 +33,61 @@ public class CreateGroupCommandImpl implements Command {
 	private ServiceFactory factory = ServiceFactory.getInstance();
 
 	@Override
-	public String execute(HttpServletRequest request) {
+	public PageResult execute(SessionRequestContent content) {
 
-		String page = null;
+		PageResult result = null;
 
-		HttpSession session = request.getSession(true);
-		String language = session.getAttribute("language").toString();
-
+		String language = (String) content.getSessionAttribute("language");
 		logger.debug("language {}", language);
 
-		MessageManager manager;
+		Integer adminId = (Integer)(content.getSessionAttribute("adminId"));
+		logger.debug("adminId {}", adminId);
 
-		switch (language) {
-		case "en", "en_US":
-			manager = MessageManager.EN;
-			break;
-		case "ru", "ru_RU":
-			manager = MessageManager.RU;
-			break;
-		case "be", "be_BY":
-			manager = MessageManager.BY;
-			break;
-		default:
-			manager = MessageManager.EN;
-		}
-
-		String title = request.getParameter("group");
+		String title = content.getRequestParameter("group");
 		logger.debug("title {}", title);
-		String surname = request.getParameter("teacher");
+		String surname = content.getRequestParameter("teacher");
 		logger.debug("surname {}", surname);
-		String level = request.getParameter("level");
+		String level = content.getRequestParameter("level");
 		logger.debug("level {}", level);
-		String[] weekdays = request.getParameterValues("weekday");
+		String[] weekdays = (String [])content.getRequestAttribute("weekday");
 		logger.debug("weekdays {}", weekdays.toString());
-		String time = request.getParameter("time");
+		String time = content.getRequestParameter("time");
 		logger.debug("name {}", time);
-		String duration = request.getParameter("duration");
+		String duration = content.getRequestParameter("duration");
 		logger.debug("duration {}", duration);
 
 		try {
-			if (factory.getGroupService().readByTitle(title) != null) {
-				request.setAttribute("errorGroupTitleMessage", manager.getProperty("errorGroupTitleMessage"));
-			} else {
-				Teacher teacher = factory.getUserService().readBySurname(surname);
-
-				if (title != null && level != null) {
-					
+			if (adminId != null && title != null && surname != null && level != null && weekdays != null && time != null
+					&& duration != null) {
+				if (factory.getGroupService().readByTitle(title) != null) {
+					content.setSessionAttribute("errorGroupTitleMessage",
+							MessageManager.getProperty("errorGroupTitleMessage", language));
+				} else {
+					Teacher teacher = factory.getUserService().readBySurname(surname);
 					Group group = factory.getGroupbuilder().buildGroup(title, teacher, Level.valueOf(level));
-
 					List<Schedule> schedules = new ArrayList<>();
-
 					for (String weekday : weekdays) {
-						if (duration != null && time != null && weekday != null) {
-							Schedule schedule = factory.getSchedulebuilder().buildSchedule(Integer.parseInt(duration),
-									group, LocalTime.parse(time), WeekDay.valueOf(weekday));
-							schedules.add(schedule);
-						}
+						Schedule schedule = factory.getSchedulebuilder().buildSchedule(Integer.parseInt(duration),
+								group, LocalTime.parse(time), WeekDay.valueOf(weekday));
+						schedules.add(schedule);
 					}
 					group.setSchedule(schedules);
 
 					if (factory.getGroupService().create(group)) {
-						request.setAttribute("successRegMessage", manager.getProperty("successRegMessage"));
-						logger.debug("group has been created");
-
+						content.setSessionAttribute("successRegGroupMessage",
+								MessageManager.getProperty("successRegMessage", language));
 					} else {
-						request.setAttribute("errorRegMessage", manager.getProperty("errorRegMessage"));
+						content.setSessionAttribute("errorRegMessage",
+								MessageManager.getProperty("errorRegMessage", language));
 					}
 				}
 			}
-			page = ConfigurationManager.getProperty("path.page.groupRegistration");
+			result = new PageResult(ConfigurationManager.getProperty("path.page.groupRegistration"), true);
 		} catch (ServiceException e) {
-			request.setAttribute("errorMessage", manager.getProperty("errorMessage"));
-			logger.debug("error");
-			page = ConfigurationManager.getProperty("path.page.error");
+			content.setRequestParameter("errorMessage", MessageManager.getProperty("errorMessage", language));
+			result = new PageResult(ConfigurationManager.getProperty("path.page.error"), false);
 		}
-		return page;
+
+		return result;
 	}
 }

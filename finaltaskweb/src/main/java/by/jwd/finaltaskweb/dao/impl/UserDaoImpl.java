@@ -76,6 +76,7 @@ public class UserDaoImpl extends StudioDaoImpl implements UserDao {
 		return users;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends User> List<T> readByRole(Role role) throws DaoException {
 

@@ -13,6 +13,7 @@ import org.testng.annotations.Test;
 
 import by.jwd.finaltaskweb.dao.DaoException;
 import by.jwd.finaltaskweb.dao.DaoFactory;
+import by.jwd.finaltaskweb.dao.TransactionImpl;
 import by.jwd.finaltaskweb.dao.pool.ConnectionPool;
 import by.jwd.finaltaskweb.entity.Client;
 import by.jwd.finaltaskweb.entity.Role;
@@ -85,10 +86,10 @@ public class ReadUserByLoginTest {
 
 	public void testReadByLogin(String login, User expected) throws DaoException {
 
-	
 		Connection connection = ConnectionPool.getInstance().getConnection();
-		DaoFactory factory = new DaoFactory (connection);
-		User  actual = factory.getUserDao().readByLogin (login);
+		TransactionImpl transaction = new TransactionImpl(connection);
+		DaoFactory factory = DaoFactory.getInstance();
+		User  actual = factory.getUserDao(transaction).readByLogin (login);
 		assertEquals(actual, expected);
 	}
 }

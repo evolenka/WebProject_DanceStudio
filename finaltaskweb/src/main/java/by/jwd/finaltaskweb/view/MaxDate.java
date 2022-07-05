@@ -7,6 +7,14 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
+/**
+ * MaxDate class provides handling of the custom tag which returns current
+ * date plus month
+ * 
+ * @author Evlashkina
+ *
+ */
+
 @SuppressWarnings("serial")
 public class MaxDate  extends TagSupport {
 	

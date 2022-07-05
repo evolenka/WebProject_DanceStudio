@@ -17,6 +17,7 @@ import org.testng.annotations.Test;
 
 import by.jwd.finaltaskweb.dao.DaoException;
 import by.jwd.finaltaskweb.dao.DaoFactory;
+import by.jwd.finaltaskweb.dao.TransactionImpl;
 import by.jwd.finaltaskweb.dao.pool.ConnectionPool;
 import by.jwd.finaltaskweb.entity.Client;
 import by.jwd.finaltaskweb.entity.Membership;
@@ -72,8 +73,9 @@ public class ReadValidMembershipByClientTest {
 	public void testReadByClientAndPeriod(int clientId, List<Membership> expected) throws DaoException {
 
 		Connection connection = ConnectionPool.getInstance().getConnection();
-		DaoFactory factory = new DaoFactory (connection);
-		List<Membership> actual = factory.getMembershipDao().readValidByClient(clientId);
+		TransactionImpl transaction = new TransactionImpl(connection);
+		DaoFactory factory = DaoFactory.getInstance();
+		List<Membership> actual = factory.getMembershipDao(transaction).readValidByClient(clientId);
 		assertEquals(actual, expected);
 	}
 }

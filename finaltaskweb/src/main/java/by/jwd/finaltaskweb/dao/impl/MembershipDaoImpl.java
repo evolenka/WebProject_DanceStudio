@@ -30,6 +30,7 @@ public class MembershipDaoImpl extends StudioDaoImpl implements MembershipDao {
 	private static final String SQL_SELECT_ALL_TYPES = "SELECT type_of_membership.id,  type_of_membership.title, type_of_membership.max_class_quantity, type_of_membership.price FROM `type_of_membership`";
 	private static final String SQL_SELECT_BY_ID = "SELECT membership.client_id, membership.start_date, membership.end_date, membership.balance_quantity, membership.type_of_membership_id FROM `membership` WHERE membership.id = ?";
 	private static final String SQL_SELECT_TYPE_BY_ID = "SELECT title, max_class_quantity, price FROM `type_of_membership` WHERE id = ?";
+	private static final String SQL_SELECT_BY_CLIENT = "SELECT membership.id, membership.start_date, membership.end_date, membership.balance_quantity, membership.type_of_membership_id FROM `membership` WHERE membership.client_id = ?";
 	private static final String SQL_SELECT_BY_CLIENT_AND_PERIOD = "SELECT membership.id, membership.start_date, membership.end_date, membership.balance_quantity, membership.type_of_membership_id FROM `membership` WHERE membership.client_id = ? AND membership.start_date >= ? AND membership.start_date <= ?";
 	private static final String SQL_SELECT_BY_PERIOD = "SELECT membership.id, membership.client_id, membership.start_date, membership.end_date, membership.balance_quantity, membership.type_of_membership_id FROM `membership` WHERE membership.start_date >= ? AND membership.start_date <= ?";
 	private static final String SQL_INSERT_MEMBERSHIP = "INSERT INTO `membership` (client_id, start_date, end_date, membership.balance_quantity, type_of_membership_id) VALUES (?, ?, ?, ?, ?)";
@@ -81,7 +82,7 @@ public class MembershipDaoImpl extends StudioDaoImpl implements MembershipDao {
 			ResultSet resultSet = statement.executeQuery(SQL_SELECT_ALL_TYPES);
 			while (resultSet.next()) {
 				MembershipType type = new MembershipType(resultSet.getInt(1));
-				type.setTitle(Type.valueOf(resultSet.getString(2)));
+				type.setType(Type.valueOf(resultSet.getString(2)));
 				type.setMaxClassQuantity(resultSet.getInt(3));
 				type.setPrice(resultSet.getInt(4));
 
@@ -269,6 +270,42 @@ public class MembershipDaoImpl extends StudioDaoImpl implements MembershipDao {
 
 				memberships.add(membership);
 
+				logger.debug("memberships have been read by client and period {}", membership);
+			}
+
+		} catch (SQLException e) {
+			throw new DaoException();
+		} finally {
+			close(statement);
+		}
+		return memberships;
+	}
+
+	@Override
+	public List<Membership> readByClient(Integer clientId) throws DaoException {
+
+		List<Membership> memberships = new ArrayList<>();
+
+		PreparedStatement statement = null;
+
+		try {
+			statement = connection.prepareStatement(SQL_SELECT_BY_CLIENT);
+			statement.setInt(1, clientId);
+
+			ResultSet resultSet = statement.executeQuery();
+
+			while (resultSet.next()) {
+
+				Membership membership = new Membership();
+				membership.setId(resultSet.getInt(1));
+				membership.setClient(new Client(clientId));
+				membership.setStartDate(resultSet.getDate(2).toLocalDate());
+				membership.setEndDate(resultSet.getDate(3).toLocalDate());
+				membership.setBalanceClassQuantity(resultSet.getInt(4));
+				membership.setType(new MembershipType(resultSet.getInt(5)));
+
+				memberships.add(membership);
+
 				logger.debug("memberships have been read by client {}", membership);
 			}
 
@@ -401,7 +438,7 @@ public class MembershipDaoImpl extends StudioDaoImpl implements MembershipDao {
 
 				type = new MembershipType(id);
 
-				type.setTitle(Type.valueOf(resultSet.getString(1)));
+				type.setType(Type.valueOf(resultSet.getString(1)));
 				type.setMaxClassQuantity(resultSet.getInt(2));
 				type.setPrice(resultSet.getDouble(3));
 

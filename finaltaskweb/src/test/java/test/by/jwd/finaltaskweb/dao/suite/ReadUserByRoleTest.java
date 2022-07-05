@@ -15,6 +15,7 @@ import org.testng.annotations.Test;
 
 import by.jwd.finaltaskweb.dao.DaoException;
 import by.jwd.finaltaskweb.dao.DaoFactory;
+import by.jwd.finaltaskweb.dao.TransactionImpl;
 import by.jwd.finaltaskweb.dao.pool.ConnectionPool;
 import by.jwd.finaltaskweb.entity.Client;
 import by.jwd.finaltaskweb.entity.Role;
@@ -178,11 +179,10 @@ public class ReadUserByRoleTest {
 	@Test(groups = { "dao" }, dataProvider = "ReadByRole")
 
 	public void testReadByRole(Role role, List <Client> expected) throws DaoException {
-
-	
 		Connection connection = ConnectionPool.getInstance().getConnection();
-		DaoFactory factory = new DaoFactory (connection);
-		List <Client> actual = factory.getUserDao().readByRole (role);
+		TransactionImpl transaction = new TransactionImpl(connection);
+		DaoFactory factory = DaoFactory.getInstance();
+		List <Client> actual = factory.getUserDao(transaction).readByRole (role);
 		assertEquals(actual, expected);
 	}
 }
