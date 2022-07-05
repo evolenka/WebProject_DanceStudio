@@ -3,6 +3,9 @@ package by.jwd.finaltaskweb.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -26,6 +29,7 @@ import by.jwd.finaltaskweb.controller.impl.LoginationCommandImpl;
 import by.jwd.finaltaskweb.controller.impl.LogoutCommandImpl;
 import by.jwd.finaltaskweb.controller.impl.MembershipsStaticticsCommandImpl;
 import by.jwd.finaltaskweb.controller.impl.ReadActiveClassesByDateComandImpl;
+import by.jwd.finaltaskweb.controller.impl.ReadAllAvailiableDatesCommandImpl;
 import by.jwd.finaltaskweb.controller.impl.ReadAllClientCommandImpl;
 import by.jwd.finaltaskweb.controller.impl.ReadAllGroupCommandImpl;
 import by.jwd.finaltaskweb.controller.impl.ReadAllLevelCommandImpl;
@@ -57,24 +61,13 @@ import by.jwd.finaltaskweb.controller.impl.UpdatePasswordCommandImpl;
 import by.jwd.finaltaskweb.controller.impl.UpdateTeacherCommandImpl;
 import by.jwd.finaltaskweb.controller.impl.UpdateVisitStatusCommandImpl;
 
-/**
- * CommandFactory gets command object that corresponds the command name from the
- * request
- * 
- * @author Evlashkina
- *
- */
-public class CommandFactory {
+public class CommandProvider {
 
-	private static Logger logger = LogManager.getLogger(CommandFactory.class);
-
-	private static final CommandFactory instance = new CommandFactory();
-
-	private static final String COMMAND = "command";
+	private static Logger logger = LogManager.getLogger(CommandProvider.class);
 
 	private Map<CommandEnum, Command> commands = new HashMap<>();
 
-	private CommandFactory() {
+	public CommandProvider() {
 		commands.put(CommandEnum.READALLSCHEDULE, new ReadAllScheduleCommandImpl());
 		commands.put(CommandEnum.READALLTEACHER, new ReadAllTeacherCommandImpl());
 		commands.put(CommandEnum.READALLTEACHERBYADMIN, new ReadAllTeacherByAdminCommandImpl());
@@ -112,6 +105,7 @@ public class CommandFactory {
 		commands.put(CommandEnum.READACTIVECLASSESBYDATE, new ReadActiveClassesByDateComandImpl());
 		commands.put(CommandEnum.CREATEVISIT, new CreateVisitCommandImpl());
 		commands.put(CommandEnum.CONFIRMVISIT, new ConfirmVisitCommandImpl());
+		commands.put(CommandEnum.READALLAVAILIABLEDATES, new ReadAllAvailiableDatesCommandImpl());
 		commands.put(CommandEnum.READPLANNEDCLASSESBYTEACHER, new ReadPlannedClassesByTeacherCommandImpl());
 		commands.put(CommandEnum.MARKPRESENCE, new UpdateVisitStatusCommandImpl());
 		commands.put(CommandEnum.CLOSEENROLLMENT, new CloseClassForEnrollmentCommandImpl());
@@ -121,36 +115,44 @@ public class CommandFactory {
 		commands.put(CommandEnum.EDITGROUP, new ChooseGroupToEditCommandImpl());
 		commands.put(CommandEnum.UPDATEGROUP, new UpdateGroupCommandImpl());
 		commands.put(CommandEnum.DELETEGROUP, new DeleteGroupCommandImpl());
-		commands.put(CommandEnum.READVISITCOUNTBYTEACHERGROUPSANDPERIOD,
-				new ReadVisitsCountByTeacherGroupsAndPeriodCommandImpl());
+		commands.put(CommandEnum.READVISITCOUNTBYTEACHERGROUPSANDPERIOD, new ReadVisitsCountByTeacherGroupsAndPeriodCommandImpl());
 		commands.put(CommandEnum.READVISITCOUNTBYGROUPSANDPERIOD, new ReadVisitsCountByGroupsAndPeriodCommandImpl());
 		commands.put(CommandEnum.MEMBERSHIPSTATICSFORPERIOD, new MembershipsStaticticsCommandImpl());
 		commands.put(CommandEnum.WRONGCOMMAND, new EmptyCommandImpl());
 	}
 
-	public static CommandFactory getInstance() {
-		return instance;
-	}
+	public Command getCommand(HttpServletRequest request) {
+		
+		HttpSession session = request.getSession(true);
+		String language = session.getAttribute("language").toString();
+		logger.debug("language {}", language);
 
-	public Command getCommand(SessionRequestContent content) {
-
+	
+		
 		Command command;
+		// извлечение имени команды из запроса
+		String action = request.getParameter("command");
 		
-				
-		// invoking command name
-		String name = content.getRequestParameter(COMMAND);
-		logger.debug("command name {}", name);
+		if(action !=null) {
+	
+		session.setAttribute("command", action);
+		logger.debug("action {}", action);
+		}
 		
-		if (name == null || "".equals(name)) {
+		if(action==null && session.getAttribute("command") != null ) {
+			action = (String) session.getAttribute("command");
+		}
+
+		if (action == null || action.isEmpty()) {
 			command = commands.get(CommandEnum.WRONGCOMMAND);
 		} else {
-			// getting the respective command object
+			// получение объекта, соответствующего команде
 			try {
-				CommandEnum currentEnum = CommandEnum.valueOf(name.toUpperCase());
+				CommandEnum currentEnum = CommandEnum.valueOf(action.toUpperCase());
 				command = commands.get(currentEnum);
 
 			} catch (IllegalArgumentException e) {
-				command = commands.get(CommandEnum.WRONGCOMMAND);
+				command = commands.get(CommandEnum.WRONGCOMMAND);			
 			}
 		}
 		return command;

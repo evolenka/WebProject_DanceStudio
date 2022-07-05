@@ -3,21 +3,22 @@ package by.jwd.finaltaskweb.controller.impl;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.jwd.finaltaskweb.controller.Command;
 import by.jwd.finaltaskweb.controller.ConfigurationManager;
 import by.jwd.finaltaskweb.controller.MessageManager;
-import by.jwd.finaltaskweb.controller.PageResult;
-import by.jwd.finaltaskweb.controller.SessionRequestContent;
 import by.jwd.finaltaskweb.entity.Group;
 import by.jwd.finaltaskweb.service.ServiceException;
 import by.jwd.finaltaskweb.service.ServiceFactory;
 
 /**
  * ReadGroupByStyleCommandImpl implements command for viewing all groups
- * filtered by chosen dance style by client while picking up the group
+ * filtered by chosen dance style by client while picking up the dance class
  * 
  * @author Evlashkina
  *
@@ -29,32 +30,53 @@ public class ReadGroupByStyleCommandImpl implements Command {
 	private ServiceFactory factory = ServiceFactory.getInstance();
 
 	@Override
-	public PageResult execute(SessionRequestContent content) {
+	public String execute(HttpServletRequest request) {
 
-		PageResult result = null;
-
-		String language = (String) content.getSessionAttribute("language");
+		String page = null;
+		HttpSession session = request.getSession(true);
+		String language = session.getAttribute("language").toString();
 		logger.debug("language {}", language);
 
-		Integer clientId = (Integer)(content.getSessionAttribute("clientId"));
-		logger.debug("clientId {}", clientId);
+		MessageManager manager;
 
-		String style = content.getRequestParameter("style");
-		logger.debug("style {}", style);
+		switch (language) {
+		case "en", "en_US":
+			manager = MessageManager.EN;
+			break;
+		case "ru", "ru_RU":
+			manager = MessageManager.RU;
+			break;
+		case "be", "be_BY":
+			manager = MessageManager.BY;
+			break;
+		default:
+			manager = MessageManager.EN;
+		}
+
+		Integer clientId = (Integer) session.getAttribute("clientId");
 
 		try {
-			if (clientId != null && style != null) {
+			if (clientId == null) {
+				request.setAttribute("errorNoSession", manager.getProperty("errorNoSession"));
+				logger.debug("session timed out");
+
+			} else {
+
+				if (request.getParameter("style") != null) {
+					session.setAttribute(("style"), request.getParameter("style"));
+				}
+
+				String style = (String) session.getAttribute("style");
+				logger.debug("style {}", style);
 
 				List<Group> groups = factory.getGroupService().readByDanceStyle(style);
-				content.setSessionAttribute("groups", groups);
-				
-				result = new PageResult(ConfigurationManager.getProperty("path.page.chooseGroupByStyle"),
-						false);
+				request.setAttribute("groups", groups);
 			}
+			page = ConfigurationManager.getProperty("path.page.chooseGroupByStyle");
 		} catch (ServiceException e) {
-			content.setRequestParameter("errorMessage", MessageManager.getProperty("errorMessage", language));
-			result = new PageResult(ConfigurationManager.getProperty("path.page.error"), false);
+			page = ConfigurationManager.getProperty("path.page.error");
+			request.setAttribute("errorMessage", manager.getProperty("errorMessage"));
 		}
-		return result;
+		return page;
 	}
 }

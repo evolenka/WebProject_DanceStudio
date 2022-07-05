@@ -16,7 +16,6 @@ import org.testng.annotations.Test;
 
 import by.jwd.finaltaskweb.dao.DaoException;
 import by.jwd.finaltaskweb.dao.DaoFactory;
-import by.jwd.finaltaskweb.dao.TransactionImpl;
 import by.jwd.finaltaskweb.dao.pool.ConnectionPool;
 import by.jwd.finaltaskweb.entity.Client;
 import by.jwd.finaltaskweb.entity.Membership;
@@ -112,9 +111,8 @@ public class ReadAllMembershipTest {
 		expected.add(membership7);
 				
 		Connection connection = ConnectionPool.getInstance().getConnection();
-		TransactionImpl transaction = new TransactionImpl(connection);
-		DaoFactory factory = DaoFactory.getInstance();
-		List <Membership> actual = factory.getMembershipDao(transaction).readAll();
+		DaoFactory factory = new DaoFactory (connection);
+		List <Membership> actual = factory.getMembershipDao().readAll();
 		assertEquals(actual, expected);
 	}
 }

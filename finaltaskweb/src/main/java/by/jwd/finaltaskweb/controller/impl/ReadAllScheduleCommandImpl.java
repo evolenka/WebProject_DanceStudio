@@ -3,14 +3,13 @@ package by.jwd.finaltaskweb.controller.impl;
 import java.util.EnumMap;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.jwd.finaltaskweb.controller.Command;
 import by.jwd.finaltaskweb.controller.ConfigurationManager;
-import by.jwd.finaltaskweb.controller.MessageManager;
-import by.jwd.finaltaskweb.controller.PageResult;
-import by.jwd.finaltaskweb.controller.SessionRequestContent;
 import by.jwd.finaltaskweb.entity.Schedule;
 import by.jwd.finaltaskweb.entity.WeekDay;
 import by.jwd.finaltaskweb.service.ServiceException;
@@ -28,29 +27,28 @@ public class ReadAllScheduleCommandImpl implements Command{
 	static Logger logger = LogManager.getLogger(ReadAllScheduleCommandImpl.class);
 
 	@Override
-	public PageResult execute(SessionRequestContent content) {
+	public String execute(HttpServletRequest request) {
 
-		PageResult result = null;
+		String page = null;
 
-		String language = (String) content.getSessionAttribute("language");
-		logger.debug("language {}", language);
-
+		EnumMap<WeekDay, List <Schedule>> schedule;
 		
 		try {
-			EnumMap<WeekDay, List <Schedule>> schedule; schedule = ServiceFactory.getInstance().getScheduleService().allScheduleByWeekDay();
-			content.setSessionAttribute("scheduleMonday", schedule.get(WeekDay.MONDAY));
-			content.setSessionAttribute("scheduleTuesday", schedule.get(WeekDay.TUESDAY));
-			content.setSessionAttribute("scheduleWednesday", schedule.get(WeekDay.WEDNESDAY));
-			content.setSessionAttribute("scheduleThursday", schedule.get(WeekDay.THURSDAY));
-			content.setSessionAttribute("scheduleFriday", schedule.get(WeekDay.FRIDAY));
+			schedule = ServiceFactory.getInstance().getScheduleService().allScheduleByWeekDay();
+			request.setAttribute("scheduleMonday", schedule.get(WeekDay.MONDAY));
+			logger.debug("schedule for Monday {}", schedule.get(WeekDay.MONDAY));
+			request.setAttribute("scheduleTuesday", schedule.get(WeekDay.TUESDAY));
+			request.setAttribute("scheduleWednesday", schedule.get(WeekDay.WEDNESDAY));
+			request.setAttribute("scheduleThursday", schedule.get(WeekDay.THURSDAY));
+			request.setAttribute("scheduleFriday", schedule.get(WeekDay.FRIDAY));
 			
-			result = new PageResult(ConfigurationManager.getProperty("path.page.schedule"), false);
-
+			page = ConfigurationManager.getProperty("path.page.schedule");
+			logger.debug("page {}", page);
+			
 		} catch (ServiceException e) {
-			content.setRequestParameter("errorMessage", MessageManager.getProperty("errorMessage", language));
-			result = new PageResult(ConfigurationManager.getProperty("path.page.error"), false);
+			logger.error(e);
 		}
+		return page;
 
-		return result;
 	}
 }

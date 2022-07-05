@@ -47,7 +47,7 @@ public class GroupServiceImpl extends StudioServiceImpl implements GroupService 
 		} catch (DaoException e) {
 			throw new ServiceException();
 		}
-		logger.debug("groups{}", groups);
+		logger.debug("groups {}", groups);
 		return groups;
 	}
 
@@ -77,35 +77,14 @@ public class GroupServiceImpl extends StudioServiceImpl implements GroupService 
 	@Override
 	public boolean delete(Integer id) throws ServiceException {
 		try {
-			Group group = factory.getGroupDao(transaction).readEntityById(id);
-			
-			for (Schedule schedule : group.getSchedule()) {
-						factory.getScheduleDao(transaction).delete(schedule.getId());
-			}
 			factory.getGroupDao(transaction).delete(id);
-			
 			transaction.close();
 
 		} catch (DaoException e) {
-
-			try {
-				transaction.rollback();
-			} catch (DaoException e1) {
-				logger.debug("rollback error");
-				throw new ServiceException();
-			}
-		} finally {
-			try {
-				transaction.setAutoCommit(true);
-			} catch (DaoException e1) {
-				logger.debug("setAutoCommit error");
-				throw new ServiceException();
-
-			}
+			throw new ServiceException();
 		}
 		return true;
 	}
-		
 
 	@Override
 	public boolean create(Group group) throws ServiceException {
@@ -149,7 +128,10 @@ public class GroupServiceImpl extends StudioServiceImpl implements GroupService 
 		try {
 
 			factory.getGroupDao(transaction).update(group);
-			
+			// Group updatedGroup =
+			// factory.getGroupDao(transaction).readEntityById(group.getId());
+			// logger.debug("groupAfterUpdate {}", updatedGroup);
+
 			Group groupBeforeUpdate = this.readEntityById(group.getId());
 			logger.debug("groupBeforeUpdate {}", groupBeforeUpdate);
 

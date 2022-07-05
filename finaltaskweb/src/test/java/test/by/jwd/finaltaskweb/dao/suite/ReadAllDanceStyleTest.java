@@ -15,8 +15,6 @@ import org.testng.annotations.Test;
 
 import by.jwd.finaltaskweb.dao.DaoException;
 import by.jwd.finaltaskweb.dao.DaoFactory;
-
-import by.jwd.finaltaskweb.dao.TransactionImpl;
 import by.jwd.finaltaskweb.dao.pool.ConnectionPool;
 
 public class ReadAllDanceStyleTest {
@@ -60,11 +58,10 @@ public class ReadAllDanceStyleTest {
 
 	public void testReadAllDanceStyle(List<String>expected) throws DaoException {
 
+	
 		Connection connection = ConnectionPool.getInstance().getConnection();
-		TransactionImpl transaction = new TransactionImpl(connection);
-		DaoFactory factory = DaoFactory.getInstance();
-
-		List <String>  actual = factory.getUserDao(transaction).readAllDanceStyle();
+		DaoFactory factory = new DaoFactory (connection);
+		List <String>  actual = factory.getUserDao().readAllDanceStyle();
 		assertEquals(actual, expected);
 	}
 }

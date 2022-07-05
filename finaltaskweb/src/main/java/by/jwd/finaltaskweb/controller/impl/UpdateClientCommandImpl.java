@@ -1,5 +1,7 @@
 package by.jwd.finaltaskweb.controller.impl;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -7,8 +9,6 @@ import org.apache.logging.log4j.Logger;
 import by.jwd.finaltaskweb.controller.Command;
 import by.jwd.finaltaskweb.controller.ConfigurationManager;
 import by.jwd.finaltaskweb.controller.MessageManager;
-import by.jwd.finaltaskweb.controller.PageResult;
-import by.jwd.finaltaskweb.controller.SessionRequestContent;
 import by.jwd.finaltaskweb.entity.Client;
 import by.jwd.finaltaskweb.service.ServiceException;
 import by.jwd.finaltaskweb.service.ServiceFactory;
@@ -27,51 +27,71 @@ public class UpdateClientCommandImpl implements Command {
 	private ServiceFactory factory = ServiceFactory.getInstance();
 
 	@Override
-	public PageResult execute(SessionRequestContent content) {
+	public String execute(HttpServletRequest request) {
 
-		PageResult result = null;
+		String page = null;
 
-		String language = (String) content.getSessionAttribute("language");
+		HttpSession session = request.getSession(true);
+		String language = (String) session.getAttribute("language");
+
 		logger.debug("language {}", language);
 
-		Integer clientId = (Integer)(content.getSessionAttribute("clientId"));
-		logger.debug("clientId {}", clientId);
+		MessageManager manager;
 
-		String surname = content.getRequestParameter("surname");
-		logger.debug("surname {}", surname);
-		String name = content.getRequestParameter("name");
-		logger.debug("name {}", name);
-		String patronymic = content.getRequestParameter("patronymic");
-		logger.debug("patronymic {}", patronymic);
-		String email = content.getRequestParameter("email");
-		logger.debug("email {}", email);
-		String phone = content.getRequestParameter("phone");
-		logger.debug("phone {}", phone);
-
+		switch (language) {
+		case "en", "en_US":
+			manager = MessageManager.EN;
+			break;
+		case "ru", "ru_RU":
+			manager = MessageManager.RU;
+			break;
+		case "be", "be_BY":
+			manager = MessageManager.BY;
+			break;
+		default:
+			manager = MessageManager.EN;
+		}
+		
 		try {
-			if (clientId != null && surname != null && name != null && email != null) {
-
+			
+		if (request.getParameter("clientId") != null) {
+			session.setAttribute("clientId", request.getParameter("clientId"));
+		}
+		Integer clientId = Integer.parseInt((String) session.getAttribute("clientId"));
+		logger.debug("clientId {}", clientId);
+		
+			if (clientId != null) {
+				
 				Client client = (Client) factory.getUserService().readEntityById(clientId);
+
+				String surname = request.getParameter("surname");
+				logger.debug("surname {}", surname);
+				String name = request.getParameter("name");
+				logger.debug("name {}", name);
+				String patronymic = request.getParameter("patronymic");
+				logger.debug("patronymic {}", patronymic);
+				String email = request.getParameter("email");
+				logger.debug("email {}", email);
+				String phone = request.getParameter("phone");
+				logger.debug("phone {}", phone);
 
 				client = factory.getClientBuilder().buildClient(client.getLogin(), client.getPassword(), surname, name,
 						patronymic, email, phone);
 				client.setId(clientId);
 				if (factory.getUserService().update(client)) {
-					content.setSessionAttribute("successUpdateUserMessage",
-							MessageManager.getProperty("successUpdateUserMessage", language));
+					request.setAttribute("successUpdateUserMessage",
+							manager.getProperty("successUpdateUserMessage"));
 
 				} else {
-					content.setSessionAttribute("errorMessage", MessageManager.getProperty("errorMessage", language));
+					request.setAttribute("errorMessage", manager.getProperty("errorMessage"));
 				}
-				content.setSessionAttribute("client", client);
-
-				result = new PageResult(ConfigurationManager.getProperty("path.page.updateClient"), true);
+				session.setAttribute("client", client);
 			}
-
+			page = ConfigurationManager.getProperty("path.page.updateClient");
 		} catch (ServiceException e) {
-			content.setRequestParameter("errorMessage", MessageManager.getProperty("errorMessage", language));
-			result = new PageResult(ConfigurationManager.getProperty("path.page.error"), false);
+			request.setAttribute("errorMessage", manager.getProperty("errorMessage"));
+			page = ConfigurationManager.getProperty("path.page.error");
 		}
-		return result;
+		return page;
 	}
 }

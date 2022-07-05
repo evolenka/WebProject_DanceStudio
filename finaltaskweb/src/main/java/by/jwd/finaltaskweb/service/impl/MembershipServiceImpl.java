@@ -175,6 +175,42 @@ public class MembershipServiceImpl extends StudioServiceImpl implements Membersh
 		return memberships;
 	}
 
+//	@Override
+//	public boolean deleteType(Integer id) throws ServiceException {
+//		try {
+//			factory.getMembershipDao(transaction).deleteType(id);
+//			transaction.close();
+//
+//		} catch (DaoException e) {
+//			throw new ServiceException();
+//		}
+//		return false;
+//	}
+//
+//	@Override
+//	public boolean createType(MembershipType type) throws ServiceException {
+//		try {
+//			factory.getMembershipDao(transaction).createType(type);
+//			transaction.close();
+//
+//		} catch (DaoException e) {
+//			throw new ServiceException();
+//		}
+//		return false;
+//	}
+//
+//	@Override
+//	public boolean updateType(MembershipType type) throws ServiceException {
+//		try {
+//			factory.getMembershipDao(transaction).updateType(type);
+//			transaction.close();
+//
+//		} catch (DaoException e) {
+//			throw new ServiceException();
+//		}
+//		return false;
+//	}
+
 	@Override
 	public MembershipType readTypeById(Integer id) throws ServiceException {
 

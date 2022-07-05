@@ -1,20 +1,21 @@
 package by.jwd.finaltaskweb.controller.impl;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.jwd.finaltaskweb.controller.Command;
 import by.jwd.finaltaskweb.controller.ConfigurationManager;
 import by.jwd.finaltaskweb.controller.MessageManager;
-import by.jwd.finaltaskweb.controller.PageResult;
-import by.jwd.finaltaskweb.controller.SessionRequestContent;
 import by.jwd.finaltaskweb.entity.User;
 import by.jwd.finaltaskweb.service.ServiceException;
 import by.jwd.finaltaskweb.service.ServiceFactory;
 
 /**
  * UpdatePasswordCommandImpl implements command for changing the password by
- * user
+ * client in his private account
  * 
  * @author Evlashkina
  *
@@ -27,60 +28,66 @@ public class UpdatePasswordCommandImpl implements Command {
 	private ServiceFactory factory = ServiceFactory.getInstance();
 
 	@Override
-	public PageResult execute(SessionRequestContent content) {
+	public String execute(HttpServletRequest request) {
 
-		PageResult result = null;
+		String page = null;
 
-		String language = (String) content.getSessionAttribute("language");
+		HttpSession session = request.getSession(true);
+		String language = (String) session.getAttribute("language");
+
 		logger.debug("language {}", language);
 
-		String login = content.getRequestParameter("login");
-		logger.debug("login {}", login);
+		MessageManager manager;
 
-		String currentPassword = content.getRequestParameter("currentPassword");
-		logger.debug("currentPassword {}", currentPassword);
+		switch (language) {
+		case "en", "en_US":
+			manager = MessageManager.EN;
+			break;
+		case "ru", "ru_RU":
+			manager = MessageManager.RU;
+			break;
+		case "be", "be_BY":
+			manager = MessageManager.BY;
+			break;
+		default:
+			manager = MessageManager.EN;
+		}
 
-		String newPassword = content.getRequestParameter("newPassword");
-		logger.debug("newPassword  {}", newPassword);
-
-		String confirmPassword = content.getRequestParameter("confirmPassword");
-		logger.debug("confirmPassword {}", confirmPassword);
+		String login = request.getParameter("login");
+		String currentPassword = request.getParameter("currentPassword");
+		String newPassword = request.getParameter("newPassword");
+		String confirmPassword = request.getParameter("confirmPassword");
 
 		User user = null;
 		try {
-			if (login != null && currentPassword != null && newPassword != null && confirmPassword != null) {
-				user = factory.getUserService().readByLoginAndPassword(login, currentPassword);
-				logger.debug("user {}", user);
+			user = factory.getUserService().readByLoginAndPassword(login, currentPassword);
+			logger.debug("user {}", user);
 
-				if (user == null) {
-					content.setSessionAttribute("errorLoginOrPassMessage",
-							MessageManager.getProperty("incorrectLoginOrPasswordMessage", language));
-					logger.debug(factory.getUserService().readByLogin(login));
-				}
+			if (user == null) {
+				request.setAttribute("errorLoginOrPassMessage", manager.getProperty("incorrectLoginOrPasswordMessage"));
+				logger.debug(factory.getUserService().readByLogin(login));
+			} else {
 
 				if (!(newPassword.equals(confirmPassword))) {
-					content.setSessionAttribute("errorPassMatchMessage",
-							MessageManager.getProperty("errorPassMatchMessage", language));
+					request.setAttribute("errorPassMatchMessage", manager.getProperty("errorPassMatchMessage"));
 
 				} else {
 					Integer userId = user.getId();
 
 					if (factory.getUserService().updatePassword(userId, newPassword)) {
-						content.setSessionAttribute("successUpdatePassMessage",
-								MessageManager.getProperty("successUpdatePassMessage", language));
+						request.setAttribute("successUpdatePassMessage",
+								manager.getProperty("successUpdatePassMessage"));
 
 					} else {
-						content.setSessionAttribute("errorMessage",
-								MessageManager.getProperty("errorMessage", language));
+						request.setAttribute("errorMessage", manager.getProperty("errorMessage"));
 					}
-
-					result = new PageResult(ConfigurationManager.getProperty("path.page.changePassword"), true);
 				}
 			}
+			page = ConfigurationManager.getProperty("path.page.changePassword");
 		} catch (ServiceException e) {
-			content.setRequestParameter("errorMessage", MessageManager.getProperty("errorMessage", language));
-			result = new PageResult(ConfigurationManager.getProperty("path.page.error"), false);
+			request.setAttribute("errorMessage", manager.getProperty("errorMessage"));
+			page = ConfigurationManager.getProperty("path.page.error");
 		}
-		return result;
+		return page;
 	}
 }

@@ -13,7 +13,6 @@ import org.testng.annotations.Test;
 
 import by.jwd.finaltaskweb.dao.DaoException;
 import by.jwd.finaltaskweb.dao.DaoFactory;
-import by.jwd.finaltaskweb.dao.TransactionImpl;
 import by.jwd.finaltaskweb.dao.pool.ConnectionPool;
 import by.jwd.finaltaskweb.entity.Group;
 import by.jwd.finaltaskweb.entity.Level;
@@ -75,9 +74,8 @@ public class ReadGroupEntityByIdTest {
 
 		Group expected = group;
 		Connection connection = ConnectionPool.getInstance().getConnection();
-		TransactionImpl transaction = new TransactionImpl(connection);
-		DaoFactory factory = DaoFactory.getInstance();
-		Group actual = factory.getGroupDao(transaction).readEntityById(id);
+		DaoFactory factory = new DaoFactory (connection);
+		Group actual = factory.getGroupDao().readEntityById(id);
 		assertEquals(actual, expected);
 	}
 }

@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,8 +16,6 @@ import org.apache.logging.log4j.Logger;
 import by.jwd.finaltaskweb.controller.Command;
 import by.jwd.finaltaskweb.controller.ConfigurationManager;
 import by.jwd.finaltaskweb.controller.MessageManager;
-import by.jwd.finaltaskweb.controller.PageResult;
-import by.jwd.finaltaskweb.controller.SessionRequestContent;
 import by.jwd.finaltaskweb.entity.Group;
 import by.jwd.finaltaskweb.entity.WeekDay;
 import by.jwd.finaltaskweb.service.ServiceException;
@@ -35,39 +35,62 @@ public class ReadGroupsByDateCommandImpl implements Command {
 	private ServiceFactory factory = ServiceFactory.getInstance();
 
 	@Override
-	public PageResult execute(SessionRequestContent content) {
+	public String execute(HttpServletRequest request) {
 
-		PageResult result = null;
-
-		String language = (String) content.getSessionAttribute("language");
+		String page = null;
+		HttpSession session = request.getSession(true);
+		String language = session.getAttribute("language").toString();
 		logger.debug("language {}", language);
 
-		Integer adminId = (Integer)(content.getSessionAttribute("adminId"));
-		logger.debug("adminId {}", adminId);
+		MessageManager manager;
 
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		LocalDate date = LocalDate.parse(content.getRequestParameter("classDate"), formatter);
-		logger.debug("classDate {}", date);
-		content.setSessionAttribute("classDate", date);
+		switch (language) {
+		case "en", "en_US":
+			manager = MessageManager.EN;
+			break;
+		case "ru", "ru_RU":
+			manager = MessageManager.RU;
+			break;
+		case "be", "be_BY":
+			manager = MessageManager.BY;
+			break;
+		default:
+			manager = MessageManager.EN;
+		}
+
+		Integer adminId = (Integer) session.getAttribute("adminId");
 
 		try {
-			if (adminId != null && date != null) {
+			if (adminId == null) {
+				request.setAttribute("errorNoSession", manager.getProperty("errorNoSession"));
+				logger.debug("session timed out");
 
-				WeekDay weekday = WeekDay.valueOf(
-						(date.getDayOfWeek().getDisplayName(TextStyle.FULL_STANDALONE, Locale.US)).toUpperCase());
+			} else {
+
+				if (request.getParameter("classDate") != null) {
+
+					session.setAttribute("classDate", request.getParameter("classDate"));
+					logger.debug("classDate {}", request.getParameter("classDate"));
+				}
+
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+				LocalDate date = LocalDate.parse((String) session.getAttribute("classDate"), formatter);
+
+				WeekDay weekday = WeekDay
+						.valueOf((date.getDayOfWeek().getDisplayName(TextStyle.FULL_STANDALONE, Locale.US)).toUpperCase());
 
 				List<WeekDay> weekdays = new ArrayList<>();
 				weekdays.add(weekday);
 
 				List<Group> groupsBySchedule = factory.getGroupService().readByWeekDay(weekdays);
-				content.setSessionAttribute("groupsBySchedule", groupsBySchedule);
+				request.setAttribute("groupsBySchedule", groupsBySchedule);
 
-				result = new PageResult(ConfigurationManager.getProperty("path.page.createClass"), false);
 			}
+			page = ConfigurationManager.getProperty("path.page.createClass");
 		} catch (ServiceException e) {
-			content.setRequestParameter("errorMessage", MessageManager.getProperty("errorMessage", language));
-			result = new PageResult(ConfigurationManager.getProperty("path.page.error"), false);
+			page = ConfigurationManager.getProperty("path.page.error");
+			request.setAttribute("errorMessage", manager.getProperty("errorMessage"));
 		}
-		return result;
+		return page;
 	}
 }

@@ -2,68 +2,95 @@ package by.jwd.finaltaskweb.controller.impl;
 
 import java.time.LocalDate;
 
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import by.jwd.finaltaskweb.controller.Command;
 import by.jwd.finaltaskweb.controller.ConfigurationManager;
 import by.jwd.finaltaskweb.controller.MessageManager;
-import by.jwd.finaltaskweb.controller.PageResult;
-import by.jwd.finaltaskweb.controller.SessionRequestContent;
 import by.jwd.finaltaskweb.entity.DanceClass;
 import by.jwd.finaltaskweb.entity.Group;
 import by.jwd.finaltaskweb.service.ServiceException;
 import by.jwd.finaltaskweb.service.ServiceFactory;
 
-/**
- * ReadVisitsByGroupAndDateCommandImpl implements command for viewing by teacher all visits
- * of the clients of the selected group per the selected date
- * 
- * @author Evlashkina
- *
- */
 
-public class ReadDanceClassByGroupAndDateCommandImpl implements Command {
+	/**
+	 * ReadVisitsByGroupAndDateCommandImpl implements command for viewing all
+	 * visits of the clients of the selected group per the selected date
+	 * 
+	 * @author Evlashkina
+	 *
+	 */
 
-	private static Logger logger = LogManager.getLogger(ReadDanceClassByGroupAndDateCommandImpl.class);
+	public class ReadDanceClassByGroupAndDateCommandImpl implements Command {
 
-	private ServiceFactory factory = ServiceFactory.getInstance();
+		private static Logger logger = LogManager.getLogger(ReadDanceClassByGroupAndDateCommandImpl.class);
 
-	@Override
-	public PageResult execute(SessionRequestContent content) {
+		private ServiceFactory factory = ServiceFactory.getInstance();
 
-		PageResult result = null;
+		@Override
+		public String execute(HttpServletRequest request) {
 
-		String language = (String) content.getSessionAttribute("language");
-		logger.debug("language {}", language);
+			String page = null;
 
-		Integer teacherId = (Integer)(content.getSessionAttribute("teacherId"));
-		logger.debug("teacherId {}", teacherId);
+			HttpSession session = request.getSession(true);
+			String language = session.getAttribute("language").toString();
 
-		Integer groupId = Integer.parseInt(content.getRequestParameter("groupId"));
-		logger.debug("group id {}", groupId);
+			logger.debug("language {}", language);
 
-		LocalDate date = LocalDate.parse(content.getRequestParameter("visitDate"));
-		logger.debug("visit date {}", date);
+			MessageManager manager;
 
-		try {
-
-			if (teacherId != null && groupId != null && date != null) {
-
-				Group group = factory.getGroupService().readEntityById(groupId);
-				content.setSessionAttribute("group", group);
-
-				DanceClass danceClass = factory.getDanceClassService().readByDateAndGroup(date, groupId);
-				content.setSessionAttribute("danceClass", danceClass);
-								
-				content.setSessionAttribute("visitDate", date);
-
-				result = new PageResult(ConfigurationManager.getProperty("path.page.visitsByTeacherSecondStep"), false);
+			switch (language) {
+			case "en", "en_US":
+				manager = MessageManager.EN;
+				break;
+			case "ru", "ru_RU":
+				manager = MessageManager.RU;
+				break;
+			case "be", "be_BY":
+				manager = MessageManager.BY;
+				break;
+			default:
+				manager = MessageManager.EN;
 			}
-		} catch (ServiceException e) {
-			content.setRequestParameter("errorMessage", MessageManager.getProperty("errorMessage", language));
-			result = new PageResult(ConfigurationManager.getProperty("path.page.error"), false);
-		}
 
-		return result;
-	}
+			Integer teacherId = (Integer) session.getAttribute("teacherId");
+			logger.debug("teacher id {}", teacherId);
+
+			try {
+				if (teacherId == null) {
+					request.setAttribute("errorNoSession", manager.getProperty("errorNoSession"));
+					logger.debug("session timed out");
+					
+				} else {
+										
+					if (request.getParameter("groupId") != null && request.getParameter("visitDate") != null) {
+					
+						session.setAttribute("groupId", request.getParameter("groupId"));
+						session.setAttribute("visitDate", request.getParameter("visitDate"));
+					}
+					
+					Integer groupId = Integer.parseInt((String) session.getAttribute("groupId"));
+					logger.debug("group id {}", groupId);
+					
+					Group group = factory.getGroupService().readEntityById(groupId);
+					session.setAttribute("group", group);
+
+					LocalDate date = LocalDate.parse((String)session.getAttribute("visitDate"));
+					logger.debug("visit date {}", date);
+					
+					DanceClass danceClass = factory.getDanceClassService().readByDateAndGroup(date, groupId);
+					session.setAttribute("danceClass", danceClass);
+				}
+				page = ConfigurationManager.getProperty("path.page.visitsByTeacher2");
+				
+			} catch (ServiceException e) {
+				request.setAttribute("errorMessage", manager.getProperty("errorMessage"));
+				page = ConfigurationManager.getProperty("path.page.error");
+
+			}
+			return page;
+		}
 }

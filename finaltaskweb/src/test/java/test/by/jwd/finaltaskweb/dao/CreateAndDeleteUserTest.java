@@ -14,7 +14,6 @@ import org.testng.annotations.Test;
 
 import by.jwd.finaltaskweb.dao.DaoException;
 import by.jwd.finaltaskweb.dao.DaoFactory;
-import by.jwd.finaltaskweb.dao.TransactionImpl;
 import by.jwd.finaltaskweb.dao.pool.ConnectionPool;
 import by.jwd.finaltaskweb.entity.Client;
 import by.jwd.finaltaskweb.entity.Role;
@@ -126,11 +125,10 @@ public class CreateAndDeleteUserTest {
 		clients.add(client6);
 
 		Connection connection = ConnectionPool.getInstance().getConnection();
-		TransactionImpl transaction = new TransactionImpl(connection);
-		DaoFactory factory = DaoFactory.getInstance();
-		
-		factory.getUserDao(transaction).create(client6);
-		List<Client> actual = factory.getUserDao(transaction).readByRole(Role.CLIENT);
+		DaoFactory factory = new DaoFactory(connection);
+
+		factory.getUserDao().create(client6);
+		List<Client> actual = factory.getUserDao().readByRole(Role.CLIENT);
 		List<Client> expected = clients;
 		logger.debug("actual {}", actual);
 		logger.debug("expected {}", expected);
@@ -205,13 +203,12 @@ public class CreateAndDeleteUserTest {
 		clients.add(client5);
 		
 		Connection connection = ConnectionPool.getInstance().getConnection();
-		TransactionImpl transaction = new TransactionImpl(connection);
-		DaoFactory factory = DaoFactory.getInstance();
-		
-		List<Client> allClients = factory.getUserDao(transaction).readByRole (Role.CLIENT);
+		DaoFactory factory = new DaoFactory(connection);
+
+		List<Client> allClients = factory.getUserDao().readByRole (Role.CLIENT);
 		Client lastAdded = allClients.get(allClients.size() - 1);
-		factory.getUserDao(transaction).delete(lastAdded.getId());
-		List<Client> actual = factory.getUserDao(transaction).readByRole (Role.CLIENT);
+		factory.getUserDao().delete(lastAdded.getId());
+		List<Client> actual = factory.getUserDao().readByRole (Role.CLIENT);
 		assertEquals(actual, clients);
 	}
 }

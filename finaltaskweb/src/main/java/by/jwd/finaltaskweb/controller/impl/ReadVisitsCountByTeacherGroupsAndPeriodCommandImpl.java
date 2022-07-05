@@ -1,8 +1,10 @@
 package by.jwd.finaltaskweb.controller.impl;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,8 +12,6 @@ import org.apache.logging.log4j.Logger;
 import by.jwd.finaltaskweb.controller.Command;
 import by.jwd.finaltaskweb.controller.ConfigurationManager;
 import by.jwd.finaltaskweb.controller.MessageManager;
-import by.jwd.finaltaskweb.controller.PageResult;
-import by.jwd.finaltaskweb.controller.SessionRequestContent;
 import by.jwd.finaltaskweb.service.ServiceException;
 import by.jwd.finaltaskweb.service.ServiceFactory;
 
@@ -30,39 +30,67 @@ public class ReadVisitsCountByTeacherGroupsAndPeriodCommandImpl implements Comma
 	private ServiceFactory factory = ServiceFactory.getInstance();
 
 	@Override
-	public PageResult execute(SessionRequestContent content) {
+	public String execute(HttpServletRequest request) {
 
-		PageResult result = null;
+		String page = null;
 
-		String language = (String) content.getSessionAttribute("language");
+		HttpSession session = request.getSession(true);
+		String language = (String) session.getAttribute("language");
+
 		logger.debug("language {}", language);
 
-		Integer teacherId = (Integer)(content.getSessionAttribute("teacherId"));
-		logger.debug("teacherId {}", teacherId);
-		
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		LocalDate startDate = LocalDate.parse(content.getRequestParameter("startDate"), formatter);
-		logger.debug("startdate {}", startDate);
+		MessageManager manager;
 
-		LocalDate endDate = LocalDate.parse(content.getRequestParameter("endDate"), formatter);
-		logger.debug("enddate {}", endDate);
+		switch (language) {
+		case "en", "en_US":
+			manager = MessageManager.EN;
+			break;
+		case "ru", "ru_RU":
+			manager = MessageManager.RU;
+			break;
+		case "be", "be_BY":
+			manager = MessageManager.BY;
+			break;
+		default:
+			manager = MessageManager.EN;
+		}
+
+		Integer teacherId = (Integer) session.getAttribute("teacherId");
+		logger.debug("teacher id {}", teacherId);
 
 		try {
-			if (teacherId != null && startDate != null && endDate != null) {
+			if (teacherId == null) {
+				request.setAttribute("errorNoSession", manager.getProperty("errorNoSession"));
+				logger.debug("session timed out");
+			} else {
+				if (request.getParameter("startDate") != null && request.getParameter("endDate") != null) {
+					session.setAttribute("startDate", request.getParameter("startDate"));
+					session.setAttribute("endDate", request.getParameter("endDate"));
+				}
 
-				Map<String, Integer> countVisitsByTeacherGroups = factory.getVisitService()
-						.countVisitsForPeriodByTeacherGroups(teacherId, startDate, endDate);
+				if (session.getAttribute("startDate") != null && session.getAttribute("endDate") != null) {
 
-				logger.debug("group and count {}", countVisitsByTeacherGroups.entrySet().toString());
+					LocalDate startDate = LocalDate.parse((String) session.getAttribute("startDate"));
+					logger.debug("startdate {}", startDate);
 
-				content.setSessionAttribute("countVisitsByTeacherGroups", countVisitsByTeacherGroups);
+					LocalDate endDate = LocalDate.parse((String) session.getAttribute("endDate"));
+					logger.debug("enddate {}", endDate);
 
-				result = new PageResult(ConfigurationManager.getProperty("path.page.visitStatisticsForTeacher"), false);
+					Map<String, Integer> countVisitsByTeacherGroups = factory.getVisitService()
+							.countVisitsForPeriodByTeacherGroups(teacherId, startDate, endDate);
+
+					logger.debug("group and count {}", countVisitsByTeacherGroups.entrySet().toString());
+
+					session.setAttribute("countVisitsByTeacherGroups", countVisitsByTeacherGroups);
+				}
 			}
+			page = ConfigurationManager.getProperty("path.page.visitStatisticsForTeacher");
+
 		} catch (ServiceException e) {
-			content.setRequestParameter("errorMessage", MessageManager.getProperty("errorMessage", language));
-			result = new PageResult(ConfigurationManager.getProperty("path.page.error"), false);
+			session.setAttribute("errorMessage", manager.getProperty("errorMessage"));
+			page = ConfigurationManager.getProperty("path.page.error");
+
 		}
-		return result;
+		return page;
 	}
 }

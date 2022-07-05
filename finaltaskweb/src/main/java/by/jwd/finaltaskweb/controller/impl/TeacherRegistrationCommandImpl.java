@@ -1,24 +1,24 @@
 package by.jwd.finaltaskweb.controller.impl;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.jwd.finaltaskweb.controller.Command;
 import by.jwd.finaltaskweb.controller.ConfigurationManager;
 import by.jwd.finaltaskweb.controller.MessageManager;
-import by.jwd.finaltaskweb.controller.PageResult;
-import by.jwd.finaltaskweb.controller.SessionRequestContent;
 import by.jwd.finaltaskweb.entity.Teacher;
 import by.jwd.finaltaskweb.service.ServiceException;
 import by.jwd.finaltaskweb.service.ServiceFactory;
 
 /**
- * TeacherRegistrationCommandImpl implements command for registration of new
- * teacher by admin
- * 
- * @author Evlashkina
- *
- */
+* TeacherRegistrationCommandImpl implements command for registration of new client
+* 
+* @author Evlashkina
+*
+*/
 public class TeacherRegistrationCommandImpl implements Command {
 
 	private static Logger logger = LogManager.getLogger(TeacherRegistrationCommandImpl.class);
@@ -26,40 +26,53 @@ public class TeacherRegistrationCommandImpl implements Command {
 	private ServiceFactory factory = ServiceFactory.getInstance();
 
 	@Override
-	public PageResult execute(SessionRequestContent content) {
+	public String execute(HttpServletRequest request) {
 
-		PageResult result = null;
+		String page = null;
 
-		String language = (String) content.getSessionAttribute("language");
+		HttpSession session = request.getSession(true);
+		String language = (String) session.getAttribute("language");
+
 		logger.debug("language {}", language);
-		
-		Integer adminId = (Integer)(content.getSessionAttribute("adminId"));
-		logger.debug("adminId {}", adminId);
 
-		String login = content.getRequestParameter("login");
+		MessageManager manager;
+
+		switch (language) {
+		case "en", "en_US":
+			manager = MessageManager.EN;
+			break;
+		case "ru", "ru_RU":
+			manager = MessageManager.RU;
+			break;
+		case "be", "be_BY":
+			manager = MessageManager.BY;
+			break;
+		default:
+			manager = MessageManager.EN;
+		}
+
+		String login = request.getParameter("login");
 		logger.debug("login {}", login);
-		String password = content.getRequestParameter("password");
+		String password = request.getParameter("password");
 		logger.debug("password {}", password);
-		String password2 = content.getRequestParameter("confirmPassword");
+		String password2 = request.getParameter("confirmPassword");
 		logger.debug("password2 {}", password2);
-		String surname = content.getRequestParameter("surname");
+		String surname = request.getParameter("surname");
 		logger.debug("surname {}", surname);
-		String name = content.getRequestParameter("name");
+		String name = request.getParameter("name");
 		logger.debug("name {}", name);
-		String style = content.getRequestParameter("style");
+		String style = request.getParameter("style");
 		logger.debug("style {}", style);
-		String portfolio = content.getRequestParameter("portfolio");
+		String portfolio = request.getParameter("portfolio");
 		logger.debug("portfolio {}", portfolio);
+		
 
 		try {
-			if (adminId !=null && login != null && password != null && password2 != null && surname != null && name != null
-					&& style != null) {
-			
 			if (!(password.equals(password2))) {
-				content.setSessionAttribute("errorPassMatchMessage", MessageManager.getProperty("errorPassMatchMessage", language));
+				request.setAttribute("errorPassMatchMessage", manager.getProperty("errorPassMatchMessage"));
 
 			} else if (factory.getUserService().readByLogin(login) != null) {
-				content.setSessionAttribute("errorLoginMessage", MessageManager.getProperty("errorLoginMessage", language));
+				request.setAttribute("errorLoginMessage", manager.getProperty("errorLoginMessage"));
 				logger.debug(factory.getUserService().readByLogin(login));
 
 			} else {
@@ -68,20 +81,18 @@ public class TeacherRegistrationCommandImpl implements Command {
 						portfolio);
 
 				if (factory.getUserService().create(teacher)) {
-					content.setSessionAttribute("successRegMessage", MessageManager.getProperty("successRegMessage", language));
+					request.setAttribute("successRegMessage", manager.getProperty("successRegMessage"));
 
 				} else {
-					content.setSessionAttribute("errorRegMessage", MessageManager.getProperty("errorRegMessage", language));
+					request.setAttribute("errorRegMessage", manager.getProperty("errorRegMessage"));
 
 				}
-			
-			result = new PageResult(ConfigurationManager.getProperty("path.page.teacherRegistration"), true);
 			}
+			page = ConfigurationManager.getProperty("path.page.teacherRegistration");
+		} catch (ServiceException e) {
+			request.setAttribute("errorMessage", manager.getProperty("errorMessage"));
+			page = ConfigurationManager.getProperty("path.page.error");
 		}
-	} catch (ServiceException e) {
-		content.setRequestParameter("errorMessage", MessageManager.getProperty("errorMessage", language));
-		result = new PageResult(ConfigurationManager.getProperty("path.page.error"), false);
+		return page;
 	}
-	return result;
-}
 }

@@ -17,9 +17,16 @@ public interface MembershipDao extends StudioDao<Integer, Membership> {
 	
 	public boolean increasebalanceClassQuantity (Integer membershipId)throws DaoException;
 	
-	public List<Membership> readByClient(Integer clientId) throws DaoException;
+	
+	/*crude operations for membership types*/
 
 	public List<MembershipType> readAllTypes() throws DaoException;
 	
 	public MembershipType readTypeById(Integer id) throws DaoException;
+
+	//public boolean deleteType(Integer id) throws DaoException;
+
+	//public boolean createType(MembershipType t) throws DaoException;
+
+	//public boolean updateType(MembershipType t) throws DaoException;
 }

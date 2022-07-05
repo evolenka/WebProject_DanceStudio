@@ -36,7 +36,7 @@ public class MembershipType extends Entity {
 		return title;
 	}
 
-	public void setType(Type title) {
+	public void setTitle(Type title) {
 		this.title = title;
 	}
 

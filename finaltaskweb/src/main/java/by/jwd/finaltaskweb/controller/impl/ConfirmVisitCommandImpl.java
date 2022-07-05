@@ -1,6 +1,10 @@
 package by.jwd.finaltaskweb.controller.impl;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -8,10 +12,7 @@ import org.apache.logging.log4j.Logger;
 import by.jwd.finaltaskweb.controller.Command;
 import by.jwd.finaltaskweb.controller.ConfigurationManager;
 import by.jwd.finaltaskweb.controller.MessageManager;
-import by.jwd.finaltaskweb.controller.PageResult;
-import by.jwd.finaltaskweb.controller.SessionRequestContent;
 import by.jwd.finaltaskweb.entity.DanceClass;
-
 import by.jwd.finaltaskweb.entity.Membership;
 import by.jwd.finaltaskweb.service.ServiceException;
 import by.jwd.finaltaskweb.service.ServiceFactory;
@@ -30,43 +31,62 @@ public class ConfirmVisitCommandImpl implements Command {
 	private ServiceFactory factory = ServiceFactory.getInstance();
 
 	@Override
-	public PageResult execute(SessionRequestContent content) {
+	public String execute(HttpServletRequest request) {
 
-		PageResult result = null;
+		String page = null;
 
-		String language = (String) content.getSessionAttribute("language");
+		HttpSession session = request.getSession(true);
+		String language = session.getAttribute("language").toString();
+
 		logger.debug("language {}", language);
 
-		Integer clientId = (Integer) (content.getSessionAttribute("clientId"));
-		logger.debug("clientId {}", clientId);
+		MessageManager manager;
 
-		Integer membershipId = Integer.parseInt(content.getRequestParameter("membershipId"));
-		logger.debug("membershipId {}", membershipId);
-
-		Integer groupId = Integer.parseInt((String) content.getSessionAttribute("groupId"));
-		logger.debug("groupId {}", groupId);
-		
-	
-		LocalDate enrollmentDate = (LocalDate)content.getSessionAttribute("enrollmentDate");
-		logger.debug("enrollmentDate {}", enrollmentDate);
-
-		try {
-			if (clientId != null && membershipId != null && groupId != null && enrollmentDate != null) {
-
-				Membership membership = factory.getMembershipService().readEntityById(membershipId);
-				content.setSessionAttribute("membership", membership);
-
-				DanceClass danceClass = factory.getDanceClassService().readByDateAndGroup(enrollmentDate, groupId);
-				content.setSessionAttribute("danceClass", danceClass);
-
-				result = new PageResult(ConfigurationManager.getProperty("path.page.enrollmentForthStep"), false);
-
-			}
-		} catch (ServiceException e) {
-			content.setRequestParameter("errorMessage", MessageManager.getProperty("errorMessage", language));
-			result = new PageResult(ConfigurationManager.getProperty("path.page.error"), false);
+		switch (language) {
+		case "en", "en_US":
+			manager = MessageManager.EN;
+			break;
+		case "ru", "ru_RU":
+			manager = MessageManager.RU;
+			break;
+		case "be", "be_BY":
+			manager = MessageManager.BY;
+			break;
+		default:
+			manager = MessageManager.EN;
 		}
 
-		return result;
+		Integer clientId = (Integer) session.getAttribute("clientId");
+
+		try {
+			if (clientId == null) {
+				request.setAttribute("errorNoSession", manager.getProperty("errorNoSession"));
+				logger.debug("session timed out");
+			} else {
+
+				if (request.getParameter("membershipId") != null) {
+					session.setAttribute("membershipId", request.getParameter("membershipId"));
+				}
+
+				Integer membershipId = Integer.parseInt((String) session.getAttribute("membershipId"));
+
+				Membership membership = factory.getMembershipService().readEntityById(membershipId);
+				session.setAttribute("membership", membership);
+				
+				Integer groupId = Integer.parseInt((String) session.getAttribute("groupId"));
+				
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+				LocalDate enrollmentDate = LocalDate.parse((String) session.getAttribute("enrollmentDate"), formatter);
+				
+				DanceClass danceClass =  factory.getDanceClassService().readByDateAndGroup(enrollmentDate, groupId);
+				session.setAttribute("danceClass", danceClass);
+
+			}
+			page = ConfigurationManager.getProperty("path.page.enrollment4");
+		} catch (ServiceException e) {
+			page = ConfigurationManager.getProperty("path.page.error");
+			request.setAttribute("errorMessage", manager.getProperty("errorMessage"));
+		}
+		return page;
 	}
 }

@@ -15,7 +15,6 @@ import org.testng.annotations.Test;
 
 import by.jwd.finaltaskweb.dao.DaoException;
 import by.jwd.finaltaskweb.dao.DaoFactory;
-import by.jwd.finaltaskweb.dao.TransactionImpl;
 import by.jwd.finaltaskweb.dao.pool.ConnectionPool;
 import by.jwd.finaltaskweb.entity.Role;
 import by.jwd.finaltaskweb.entity.Teacher;
@@ -82,9 +81,8 @@ public class ReadTeacherByDanceStyleTest {
 
 	
 		Connection connection = ConnectionPool.getInstance().getConnection();
-		TransactionImpl transaction = new TransactionImpl(connection);
-		DaoFactory factory = DaoFactory.getInstance();
-		List <Teacher>  actual = factory.getUserDao(transaction).readByDanceStyle (dancestyle);
+		DaoFactory factory = new DaoFactory (connection);
+		List <Teacher>  actual = factory.getUserDao().readByDanceStyle (dancestyle);
 		assertEquals(actual, expected);
 	}
 }

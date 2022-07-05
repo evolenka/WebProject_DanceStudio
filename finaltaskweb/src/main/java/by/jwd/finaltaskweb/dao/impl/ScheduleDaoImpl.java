@@ -237,7 +237,7 @@ public class ScheduleDaoImpl extends StudioDaoImpl implements ScheduleDao {
 			statement.setInt(3, schedule.getDuration());
 			if (schedule.getGroup().getId() == 0) {
 				statement.setNull(4, Types.TINYINT);
-			} else {
+			 } else {
 				statement.setInt(4, schedule.getGroup().getId());
 			}
 			statement.setInt(5, schedule.getId());

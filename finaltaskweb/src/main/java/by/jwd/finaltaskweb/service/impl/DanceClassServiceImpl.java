@@ -137,6 +137,7 @@ public class DanceClassServiceImpl extends StudioServiceImpl implements DanceCla
 				}
 
 				danceClass.setVisits(visits);
+
 				logger.debug("danceClassFinal {}", danceClass);
 			}
 

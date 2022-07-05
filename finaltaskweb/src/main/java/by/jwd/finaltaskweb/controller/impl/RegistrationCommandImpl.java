@@ -1,13 +1,15 @@
 package by.jwd.finaltaskweb.controller.impl;
 
+import javax.servlet.http.HttpServletRequest;
+
+import javax.servlet.http.HttpSession;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.jwd.finaltaskweb.controller.Command;
 import by.jwd.finaltaskweb.controller.ConfigurationManager;
 import by.jwd.finaltaskweb.controller.MessageManager;
-import by.jwd.finaltaskweb.controller.PageResult;
-import by.jwd.finaltaskweb.controller.SessionRequestContent;
 import by.jwd.finaltaskweb.entity.Client;
 import by.jwd.finaltaskweb.service.ServiceException;
 import by.jwd.finaltaskweb.service.ServiceFactory;
@@ -25,64 +27,74 @@ public class RegistrationCommandImpl implements Command {
 	private ServiceFactory factory = ServiceFactory.getInstance();
 
 	@Override
-	public PageResult execute(SessionRequestContent content) {
+	public String execute(HttpServletRequest request) {
 
-		PageResult result = null;
+		String page = null;
 
-		String language = (String) content.getSessionAttribute("language");
+		HttpSession session = request.getSession(true);
+		String language = (String) session.getAttribute("language");
+
 		logger.debug("language {}", language);
 
-		String login = content.getRequestParameter("login");
+		MessageManager manager;
+
+		switch (language) {
+		case "en", "en_US":
+			manager = MessageManager.EN;
+			break;
+		case "ru", "ru_RU":
+			manager = MessageManager.RU;
+			break;
+		case "be", "be_BY":
+			manager = MessageManager.BY;
+			break;
+		default:
+			manager = MessageManager.EN;
+		}
+
+		String login = request.getParameter("login");
 		logger.debug("login {}", login);
-		String password = content.getRequestParameter("password");
+		String password = request.getParameter("password");
 		logger.debug("password {}", password);
-		String password2 = content.getRequestParameter("confirmPassword");
+		String password2 = request.getParameter("confirmPassword");
 		logger.debug("password2 {}", password2);
-		String surname = content.getRequestParameter("surname");
+		String surname = request.getParameter("surname");
 		logger.debug("surname {}", surname);
-		String name = content.getRequestParameter("name");
+		String name = request.getParameter("name");
 		logger.debug("name {}", name);
-		String patronymic = content.getRequestParameter("patronymic");
+		String patronymic = request.getParameter("patronymic");
 		logger.debug("patronymic {}", patronymic);
-		String email = content.getRequestParameter("email");
+		String email = request.getParameter("email");
 		logger.debug("email {}", email);
-		String phone = content.getRequestParameter("phone");
+		String phone = request.getParameter("phone");
 		logger.debug("phone {}", phone);
 
 		try {
-			if (login != null && password != null && password2 != null && surname != null && name != null
-					&& email != null) {
-				if (!(password.equals(password2))) {
-					content.setSessionAttribute("errorPassMatchMessage",
-							MessageManager.getProperty("errorPassMatchMessage", language));
+			if (!(password.equals(password2))) {
+				request.setAttribute("errorPassMatchMessage", manager.getProperty("errorPassMatchMessage"));
 
-				} else if (factory.getUserService().readByLogin(login) != null) {
-					content.setSessionAttribute("errorLoginMessage",
-							MessageManager.getProperty("errorLoginMessage", language));
-					logger.debug(factory.getUserService().readByLogin(login));
+			} else if (factory.getUserService().readByLogin(login) != null) {
+				request.setAttribute("errorLoginMessage", manager.getProperty("errorLoginMessage"));
+				logger.debug(factory.getUserService().readByLogin(login));
+
+			} else {
+
+				Client client = factory.getClientBuilder().buildClient(login, password, surname, name, patronymic,
+						email, phone);
+
+				if (factory.getUserService().create(client)) {
+					request.setAttribute("successRegMessage", manager.getProperty("successRegMessage"));
 
 				} else {
+					request.setAttribute("errorRegMessage", manager.getProperty("errorRegMessage"));
 
-					Client client = factory.getClientBuilder().buildClient(login, password, surname, name, patronymic,
-							email, phone);
-
-					if (factory.getUserService().create(client)) {
-						content.setSessionAttribute("successRegMessage",
-								MessageManager.getProperty("successRegMessage", language));
-
-					} else {
-						content.setSessionAttribute("errorRegMessage",
-								MessageManager.getProperty("errorRegMessage", language));
-
-					}
-
-					result = new PageResult(ConfigurationManager.getProperty("path.page.registration"), true);
 				}
 			}
+			page = ConfigurationManager.getProperty("path.page.registration");
 		} catch (ServiceException e) {
-			content.setRequestParameter("errorMessage", MessageManager.getProperty("errorMessage", language));
-			result = new PageResult(ConfigurationManager.getProperty("path.page.error"), false);
+			request.setAttribute("errorMessage", manager.getProperty("errorMessage"));
+			page = ConfigurationManager.getProperty("path.page.error");
 		}
-		return result;
+		return page;
 	}
 }

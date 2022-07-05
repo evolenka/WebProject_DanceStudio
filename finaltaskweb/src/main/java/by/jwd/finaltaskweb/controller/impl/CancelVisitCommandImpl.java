@@ -3,14 +3,15 @@ package by.jwd.finaltaskweb.controller.impl;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.jwd.finaltaskweb.controller.Command;
 import by.jwd.finaltaskweb.controller.ConfigurationManager;
 import by.jwd.finaltaskweb.controller.MessageManager;
-import by.jwd.finaltaskweb.controller.PageResult;
-import by.jwd.finaltaskweb.controller.SessionRequestContent;
 import by.jwd.finaltaskweb.entity.Visit;
 import by.jwd.finaltaskweb.service.ServiceException;
 import by.jwd.finaltaskweb.service.ServiceFactory;
@@ -29,34 +30,53 @@ public class CancelVisitCommandImpl implements Command {
 	private ServiceFactory factory = ServiceFactory.getInstance();
 
 	@Override
-	public PageResult execute(SessionRequestContent content) {
+	public String execute(HttpServletRequest request) {
 
-		PageResult result = null;
-
-		String language = (String) content.getSessionAttribute("language");
+		String page = null;
+		HttpSession session = request.getSession(true);
+		String language = session.getAttribute("language").toString();
 		logger.debug("language {}", language);
 
-		Integer clientId = (Integer)(content.getSessionAttribute("clientId"));
-		logger.debug("clientId {}", clientId);
+		MessageManager manager;
 
-		Integer plannedvisitId = Integer.parseInt(content.getRequestParameter("plannedvisitId"));
-		logger.debug("plannedvisitId {}", plannedvisitId);
-
-		try {
-			if (clientId != null && plannedvisitId != null) {
-				
-			factory.getVisitService().delete(plannedvisitId);
-			List<Visit> plannedVisits = factory.getVisitService().readPlannedByClient(clientId);
-			content.setSessionAttribute("plannedVisits", plannedVisits);
-
-			result = new PageResult(ConfigurationManager.getProperty("path.page.myPlannedVisits"), true);
-			}
-
-		} catch (ServiceException e) {
-			content.setRequestParameter("errorMessage", MessageManager.getProperty("errorMessage", language));
-			result = new PageResult(ConfigurationManager.getProperty("path.page.error"), false);
+		switch (language) {
+		case "en", "en_US":
+			manager = MessageManager.EN;
+			break;
+		case "ru", "ru_RU":
+			manager = MessageManager.RU;
+			break;
+		case "be", "be_BY":
+			manager = MessageManager.BY;
+			break;
+		default:
+			manager = MessageManager.EN;
 		}
 
-		return result;
+		Integer clientId = (Integer) session.getAttribute("clientId");
+
+		try {
+			if (clientId == null) {
+				request.setAttribute("errorNoSession", manager.getProperty("errorNoSession"));
+				logger.debug("session timed out");
+
+			} else {
+
+				if (request.getParameter("plannedvisitId") != null) {
+					session.setAttribute("plannedvisitId", request.getParameter("plannedvisitId"));
+				}
+
+				Integer visitId = Integer.parseInt((String) session.getAttribute("plannedvisitId"));
+				logger.debug("planned visit id{}", visitId);
+
+				factory.getVisitService().delete(visitId);
+				List<Visit> plannedVisits = factory.getVisitService().readPlannedByClient(clientId);
+				session.setAttribute("plannedVisits", plannedVisits);
+			}
+			page = ConfigurationManager.getProperty("path.page.myPlannedVisits");
+		} catch (ServiceException e) {
+			request.setAttribute("errorCancelMessage", manager.getProperty("errorCancelMessage"));
+		}
+		return page;
 	}
 }

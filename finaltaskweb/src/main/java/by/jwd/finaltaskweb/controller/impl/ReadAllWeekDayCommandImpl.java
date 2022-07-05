@@ -1,46 +1,40 @@
+	
+	package by.jwd.finaltaskweb.controller.impl;
 
-package by.jwd.finaltaskweb.controller.impl;
+	import java.util.Arrays;
+	import java.util.List;
 
-import java.util.Arrays;
-import java.util.List;
+	import javax.servlet.http.HttpServletRequest;
+	import javax.servlet.http.HttpSession;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+	import org.apache.logging.log4j.LogManager;
+	import org.apache.logging.log4j.Logger;
 
-import by.jwd.finaltaskweb.controller.Command;
-import by.jwd.finaltaskweb.controller.ConfigurationManager;
-import by.jwd.finaltaskweb.controller.PageResult;
-import by.jwd.finaltaskweb.controller.SessionRequestContent;
-import by.jwd.finaltaskweb.entity.WeekDay;
+	import by.jwd.finaltaskweb.controller.Command;
+	import by.jwd.finaltaskweb.controller.ConfigurationManager;
+		import by.jwd.finaltaskweb.entity.WeekDay;
+	
+	/**
+	* ReadAllWeekDaysCommandImpl implements command for viewing all weekdays to choose on the enrollment page
+	* 
+	* @author Evlashkina
+	*
+	*/
+	public class ReadAllWeekDayCommandImpl implements Command {
 
-/**
- * ReadAllWeekDaysCommandImpl implements command for viewing by client all
- * weekdays to choose groups by weekdays
- * 
- * @author Evlashkina
- *
- */
-public class ReadAllWeekDayCommandImpl implements Command {
+		private static Logger logger = LogManager.getLogger(ReadAllWeekDayCommandImpl.class);
 
-	private static Logger logger = LogManager.getLogger(ReadAllWeekDayCommandImpl.class);
+		@Override
+		public String execute(HttpServletRequest request) {
 
-	@Override
-	public PageResult execute(SessionRequestContent content) {
-
-		PageResult result = null;
-
-		Integer clientId = (Integer)(content.getSessionAttribute("clientId"));
-		logger.debug("clientId {}", clientId);
-
-		if (clientId != null) {
-
-			List<WeekDay> weekdays = Arrays.asList(WeekDay.values());
-			content.setSessionAttribute("weekdays", weekdays);
-			logger.debug("weekdays {}", weekdays);
-
-			result = new PageResult(ConfigurationManager.getProperty("path.page.chooseGroupByWeekDay"), false);
+			String page = null;
+			HttpSession session = request.getSession(true);
+					
+				List<WeekDay> weekdays = Arrays.asList(WeekDay.values());
+				session.setAttribute("weekdays", weekdays);
+				logger.debug("weekdays {}", weekdays);
+				page = ConfigurationManager.getProperty("path.page.chooseGroupByWeekDay");
+		
+			return page;
 		}
-
-		return result;
 	}
-}

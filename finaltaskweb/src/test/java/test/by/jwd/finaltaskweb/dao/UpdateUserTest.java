@@ -14,7 +14,6 @@ import org.testng.annotations.Test;
 
 import by.jwd.finaltaskweb.dao.DaoException;
 import by.jwd.finaltaskweb.dao.DaoFactory;
-import by.jwd.finaltaskweb.dao.TransactionImpl;
 import by.jwd.finaltaskweb.dao.pool.ConnectionPool;
 import by.jwd.finaltaskweb.entity.Role;
 import by.jwd.finaltaskweb.entity.Teacher;
@@ -97,11 +96,9 @@ public class UpdateUserTest {
 		expected.add(teacher4);				
 
 		Connection connection = ConnectionPool.getInstance().getConnection();
-		TransactionImpl transaction = new TransactionImpl(connection);
-		DaoFactory factory = DaoFactory.getInstance();
-		
-		factory.getUserDao(transaction).update(teacher4);
-		List<Teacher> actual = factory.getUserDao(transaction).readByRole (Role.TEACHER);
+		DaoFactory factory = new DaoFactory (connection);
+		factory.getUserDao().update(teacher4);
+		List<Teacher> actual = factory.getUserDao().readByRole (Role.TEACHER);
 		logger.debug(actual);
 		assertEquals(actual, expected);
 	}
@@ -160,11 +157,9 @@ public class UpdateUserTest {
 		expected.add(teacher4);
 		
 		Connection connection = ConnectionPool.getInstance().getConnection();
-		TransactionImpl transaction = new TransactionImpl(connection);
-		DaoFactory factory = DaoFactory.getInstance();
-		
-		factory.getUserDao(transaction).update(teacher4);
-		List<Teacher> actual = factory.getUserDao(transaction).readByRole (Role.TEACHER);
+		DaoFactory factory = new DaoFactory (connection);
+		factory.getUserDao().update(teacher4);
+		List<Teacher> actual = factory.getUserDao().readByRole (Role.TEACHER);
 		logger.debug(actual);
 		assertEquals(actual, expected);
 	}

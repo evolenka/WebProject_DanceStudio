@@ -4,14 +4,15 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.jwd.finaltaskweb.controller.Command;
 import by.jwd.finaltaskweb.controller.ConfigurationManager;
 import by.jwd.finaltaskweb.controller.MessageManager;
-import by.jwd.finaltaskweb.controller.PageResult;
-import by.jwd.finaltaskweb.controller.SessionRequestContent;
 import by.jwd.finaltaskweb.entity.Group;
 import by.jwd.finaltaskweb.entity.Level;
 import by.jwd.finaltaskweb.entity.Schedule;
@@ -33,40 +34,52 @@ public class UpdateGroupCommandImpl implements Command {
 	private ServiceFactory factory = ServiceFactory.getInstance();
 
 	@Override
-	public PageResult execute(SessionRequestContent content) {
+	public String execute(HttpServletRequest request) {
 
-		PageResult result = null;
+		String page = null;
 
-		String language = (String) content.getSessionAttribute("language");
+		HttpSession session = request.getSession(true);
+		String language = (String) session.getAttribute("language");
+
 		logger.debug("language {}", language);
 
-		Integer adminId = (Integer)(content.getSessionAttribute("adminId"));
+		MessageManager manager;
+
+		switch (language) {
+		case "en", "en_US":
+			manager = MessageManager.EN;
+			break;
+		case "ru", "ru_RU":
+			manager = MessageManager.RU;
+			break;
+		case "be", "be_BY":
+			manager = MessageManager.BY;
+			break;
+		default:
+			manager = MessageManager.EN;
+		}
+		Integer adminId = (Integer) session.getAttribute("adminId");
 		logger.debug("adminId {}", adminId);
-
-		Integer groupId = (Integer)(content.getSessionAttribute("groupId"));
-		logger.debug("groupId {}", groupId);
-
-		String title = content.getRequestParameter("group");
-		logger.debug("title {}", title);
-
-		String surname = content.getRequestParameter("teacher");
-		logger.debug("surname {}", surname);
-
-		String level = content.getRequestParameter("level");
-		logger.debug("level {}", level);
-
-		String[] weekdays = (String []) content.getRequestAttribute("weekday");
-		logger.debug("weekdays {}", (Object[]) weekdays);
-
-		String time = content.getRequestParameter("time");
-		logger.debug("name {}", time);
-
-		String duration = content.getRequestParameter("duration");
-		logger.debug("duration {}", duration);
-
 		try {
-			if (adminId != null && groupId != null && title != null && surname != null && level != null
-					&& weekdays != null && time != null && duration != null) {
+			if (adminId == null) {
+				request.setAttribute("errorNoSession", manager.getProperty("errorNoSession"));
+				logger.debug("session timed out");
+			} else {
+				Integer groupId = Integer.parseInt((String) session.getAttribute("groupId"));
+				logger.debug("groupId {}", groupId);
+				
+				String title = request.getParameter("group");
+				logger.debug("title {}", title);
+				String surname = request.getParameter("teacher");
+				logger.debug("surname {}", surname);
+				String level = request.getParameter("level");
+				logger.debug("level {}", level);
+				String[] weekdays = request.getParameterValues("weekday");
+				logger.debug("weekdays {}", weekdays.toString());
+				String time = request.getParameter("time");
+				logger.debug("name {}", time);
+				String duration = request.getParameter("duration");
+				logger.debug("duration {}", duration);
 
 				Teacher teacher = factory.getUserService().readBySurname(surname);
 
@@ -76,30 +89,32 @@ public class UpdateGroupCommandImpl implements Command {
 				List<Schedule> schedules = new ArrayList<>();
 
 				for (String weekday : weekdays) {
-					Schedule schedule = factory.getSchedulebuilder().buildSchedule(Integer.parseInt(duration), group,
-							LocalTime.parse(time), WeekDay.valueOf(weekday));
-					schedules.add(schedule);
+					if (duration != null && time != null && weekday != null) {
+						Schedule schedule = factory.getSchedulebuilder().buildSchedule(Integer.parseInt(duration),
+								group, LocalTime.parse(time), WeekDay.valueOf(weekday));
+						schedules.add(schedule);
+					}
 				}
-
 				group.setSchedule(schedules);
 				logger.debug("newSchedule {}", group.getSchedule());
 
 				if (factory.getGroupService().update(group)) {
-					content.setSessionAttribute("successUpdateUserMessage",
-							MessageManager.getProperty("successUpdateUserMessage", language));
+					request.setAttribute("successUpdateUserMessage", manager.getProperty("successUpdateUserMessage"));
 					logger.debug("group has been updated");
 
 				} else {
-					content.setRequestParameter("errorMessage", MessageManager.getProperty("errorMessage", language));
+					request.setAttribute("errorMessage", manager.getProperty("errorMessage"));
 				}
-
-				result = new PageResult(ConfigurationManager.getProperty("path.page.updateGroup"), true);
 			}
 
-		} catch (ServiceException e) {
-			content.setRequestParameter("errorMessage", MessageManager.getProperty("errorMessage", language));
-			result = new PageResult(ConfigurationManager.getProperty("path.page.error"), false);
+			page = ConfigurationManager.getProperty("path.page.updateGroup");
+		} catch (
+
+		ServiceException e) {
+			request.setAttribute("errorMessage", manager.getProperty("errorMessage"));
+			logger.debug("error");
+			page = ConfigurationManager.getProperty("path.page.error");
 		}
-		return result;
+		return page;
 	}
 }

@@ -2,20 +2,22 @@ package by.jwd.finaltaskweb.controller.impl;
 
 import java.time.LocalDate;
 
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.jwd.finaltaskweb.controller.Command;
 import by.jwd.finaltaskweb.controller.ConfigurationManager;
 import by.jwd.finaltaskweb.controller.MessageManager;
-import by.jwd.finaltaskweb.controller.PageResult;
-import by.jwd.finaltaskweb.controller.SessionRequestContent;
 import by.jwd.finaltaskweb.service.ServiceException;
 import by.jwd.finaltaskweb.service.ServiceFactory;
 
 /**
  * MembershipsStaticticsCommandImpl implements command for viewing quantity and
- * sum of the sold memberships for period by admin
+ * sum of the sold memberships for period
  * 
  * @author Evlashkina
  *
@@ -27,38 +29,65 @@ public class MembershipsStaticticsCommandImpl implements Command {
 	private ServiceFactory factory = ServiceFactory.getInstance();
 
 	@Override
-	public PageResult execute(SessionRequestContent content) {
+	public String execute(HttpServletRequest request) {
 
-		PageResult result = null;
+		String page = null;
 
-		String language = (String) content.getSessionAttribute("language");
+		HttpSession session = request.getSession(true);
+		String language = session.getAttribute("language").toString();
+
 		logger.debug("language {}", language);
 
-		Integer adminId = (Integer)(content.getSessionAttribute("adminId"));
-		logger.debug("adminId {}", adminId);
+		MessageManager manager;
 
-		LocalDate startDate = LocalDate.parse(content.getRequestParameter("startDate"));
-		logger.debug("startdate {}", startDate);
-
-		LocalDate endDate = LocalDate.parse(content.getRequestParameter("endDate"));
-		logger.debug("enddate {}", endDate);
-
-		try {
-			if (adminId != null && startDate != null && endDate != null) {
-
-				Integer quantity = factory.getMembershipService().countQuantityForPeriod(startDate, endDate);
-				content.setSessionAttribute("quantity", quantity);
-
-				Double sum = factory.getMembershipService().countSumForPeriod(startDate, endDate);
-				content.setSessionAttribute("sum", sum);
-
-				result = new PageResult(ConfigurationManager.getProperty("path.page.membershipStatistics"), false);
-			}
-		} catch (ServiceException e) {
-			content.setRequestParameter("errorMessage", MessageManager.getProperty("errorMessage", language));
-			result = new PageResult(ConfigurationManager.getProperty("path.page.error"), false);
+		switch (language) {
+		case "en", "en_US":
+			manager = MessageManager.EN;
+			break;
+		case "ru", "ru_RU":
+			manager = MessageManager.RU;
+			break;
+		case "be", "be_BY":
+			manager = MessageManager.BY;
+			break;
+		default:
+			manager = MessageManager.EN;
 		}
 
-		return result;
+		Integer adminId = (Integer) session.getAttribute("adminId");
+		logger.debug("adminId {}", adminId);
+		try {
+			if (adminId == null) {
+				request.setAttribute("errorNoSession", manager.getProperty("errorNoSession"));
+				logger.debug("session timed out");
+			} else {
+				if (request.getParameter("startDate") != null && request.getParameter("endDate") != null) {
+					session.setAttribute("startDate", request.getParameter("startDate"));
+					session.setAttribute("endDate", request.getParameter("endDate"));
+				}
+
+				if (session.getAttribute("startDate") != null && session.getAttribute("endDate") != null) {
+
+					LocalDate startDate = LocalDate.parse((String) session.getAttribute("startDate"));
+					logger.debug("startdate {}", startDate);
+
+					LocalDate endDate = LocalDate.parse((String) session.getAttribute("endDate"));
+					logger.debug("enddate {}", endDate);
+					
+					Integer quantity = factory.getMembershipService().countQuantityForPeriod(startDate, endDate);
+					session.setAttribute("quantity", quantity);
+					
+					Double sum = factory.getMembershipService().countSumForPeriod(startDate, endDate);
+					session.setAttribute("sum", sum);
+				}
+			}
+			page = ConfigurationManager.getProperty("path.page.membershipStatistics");
+
+		} catch (ServiceException e) {
+			session.setAttribute("errorMessage", manager.getProperty("errorMessage"));
+			page = ConfigurationManager.getProperty("path.page.error");
+
+		}
+		return page;
 	}
 }

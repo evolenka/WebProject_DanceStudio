@@ -16,7 +16,6 @@ import org.testng.annotations.Test;
 
 import by.jwd.finaltaskweb.dao.DaoException;
 import by.jwd.finaltaskweb.dao.DaoFactory;
-import by.jwd.finaltaskweb.dao.TransactionImpl;
 import by.jwd.finaltaskweb.dao.pool.ConnectionPool;
 import by.jwd.finaltaskweb.entity.Client;
 import by.jwd.finaltaskweb.entity.Membership;
@@ -113,11 +112,9 @@ List <Membership> expected = new ArrayList<>();
 		
 
 		Connection connection = ConnectionPool.getInstance().getConnection();
-		TransactionImpl transaction = new TransactionImpl(connection);
-		DaoFactory factory = DaoFactory.getInstance();
-		
-		factory.getMembershipDao(transaction).update(membership7);
-		List<Membership> actual = factory.getMembershipDao(transaction).readAll();
+		DaoFactory factory = new DaoFactory (connection);
+		factory.getMembershipDao().update(membership7);
+		List<Membership> actual = factory.getMembershipDao().readAll();
 		assertEquals(actual, expected);
 	}
 
@@ -187,11 +184,9 @@ List <Membership> expected = new ArrayList<>();
 		expected.add(membership7);
 		
 		Connection connection = ConnectionPool.getInstance().getConnection();
-		TransactionImpl transaction = new TransactionImpl(connection);
-		DaoFactory factory = DaoFactory.getInstance();
-		
-		factory.getMembershipDao(transaction).update(membership7);
-		List<Membership> actual = factory.getMembershipDao(transaction).readAll();
+		DaoFactory factory = new DaoFactory (connection);
+		factory.getMembershipDao().update(membership7);
+		List<Membership> actual = factory.getMembershipDao().readAll();
 		assertEquals(actual, expected);
 	}
 }

@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="4.0" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee                       http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd">
  <welcome-file-list>
-        <welcome-file>index.html</welcome-file>
-        <welcome-file>index.htm</welcome-file>
-        <welcome-file>index.jsp</welcome-file>
+        <welcome-file>/WEB-INF/jsp/index.html</welcome-file>
+        <welcome-file>/WEB-INF/jsp/index.htm</welcome-file>
+        <welcome-file>/WEB-INF/jsp/index.jsp</welcome-file>
     </welcome-file-list>
  <filter>
 <filter-name>Set Character Encoding</filter-name>
-<filter-class>by.jwd.finaltaskweb.controller.filter.SetCharacterEncodingFilter</filter-class>
+<filter-class>by.jwd.finaltaskweb.controller.SetCharacterEncodingFilter</filter-class>
 <init-param>
  <param-name>encoding</param-name>
  <param-value>UTF-8</param-value>
  </init-param>
 </filter>
 <filter>
- <filter-name>Language</filter-name>
-<filter-class>by.jwd.finaltaskweb.controller.filter.LanguageFilter</filter-class>
+ <filter-name>Page redirect</filter-name>
+<filter-class>by.jwd.finaltaskweb.controller.PageRedirectSecurityFilter</filter-class>
 </filter>
 <filter-mapping>
 <filter-name>Set Character Encoding</filter-name>
 <url-pattern>/*</url-pattern>
 </filter-mapping>
 <filter-mapping>
-<filter-name>Language</filter-name>
-<url-pattern>/*</url-pattern>
+<filter-name>Page redirect</filter-name>
+<url-pattern>/jsp/clientMain.jsp</url-pattern>
 </filter-mapping>
 </web-app>

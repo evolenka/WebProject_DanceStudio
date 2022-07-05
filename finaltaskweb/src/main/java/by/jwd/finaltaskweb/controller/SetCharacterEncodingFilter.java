@@ -1,4 +1,4 @@
-package by.jwd.finaltaskweb.controller.filter;
+package by.jwd.finaltaskweb.controller;
 
 import java.io.IOException;
 
@@ -11,12 +11,7 @@ import javax.servlet.ServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-/**
- * SetCharacterEncodingFilter set character encoding UTF-8 to each request and response
- * 
- * @author Evlashkina
- *
- */
+
 public class SetCharacterEncodingFilter implements Filter {
 
 	private static Logger logger = LogManager.getLogger(SetCharacterEncodingFilter.class);

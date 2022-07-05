@@ -4,14 +4,15 @@ import java.util.ArrayList;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.jwd.finaltaskweb.controller.Command;
 import by.jwd.finaltaskweb.controller.ConfigurationManager;
 import by.jwd.finaltaskweb.controller.MessageManager;
-import by.jwd.finaltaskweb.controller.PageResult;
-import by.jwd.finaltaskweb.controller.SessionRequestContent;
 import by.jwd.finaltaskweb.entity.Group;
 import by.jwd.finaltaskweb.entity.WeekDay;
 import by.jwd.finaltaskweb.service.ServiceException;
@@ -19,7 +20,7 @@ import by.jwd.finaltaskweb.service.ServiceFactory;
 
 /**
  * ReadGroupByScheduleCommandImpl implements command for viewing all groups
- * filtered by chosen week day(s) by client while picking up the group
+ * filtered by chosen week day(s) by client while picking up the dance class
  * 
  * @author Evlashkina
  *
@@ -31,40 +32,60 @@ public class ReadGroupByScheduleCommandImpl implements Command {
 	private ServiceFactory factory = ServiceFactory.getInstance();
 
 	@Override
-	public PageResult execute(SessionRequestContent content) {
+	public String execute(HttpServletRequest request) {
 
-		PageResult result = null;
-
-		String language = (String) content.getSessionAttribute("language");
+		String page = null;
+		HttpSession session = request.getSession(true);
+		String language = session.getAttribute("language").toString();
 		logger.debug("language {}", language);
 
-		Integer clientId = (Integer)(content.getSessionAttribute("clientId"));
-		logger.debug("clientId {}", clientId);
+		MessageManager manager;
 
-		String[] days = (String [])content.getRequestAttribute("weekday");
-		logger.debug("weekday {}", days.toString());
+		switch (language) {
+		case "en", "en_US":
+			manager = MessageManager.EN;
+			break;
+		case "ru", "ru_RU":
+			manager = MessageManager.RU;
+			break;
+		case "be", "be_BY":
+			manager = MessageManager.BY;
+			break;
+		default:
+			manager = MessageManager.EN;
+		}
+
+		Integer clientId = (Integer) session.getAttribute("clientId");
 
 		try {
-			if (clientId != null && days != null) {
+			if (clientId == null) {
+				request.setAttribute("errorNoSession", manager.getProperty("errorNoSession"));
+				logger.debug("session timed out");
+
+			} else {
+
+				if (request.getParameterValues("weekday") != null) {
+					session.setAttribute(("weekday"), request.getParameterValues("weekday"));
+				}
+
+				String[] days = (String[]) session.getAttribute(("weekday"));
 
 				List<WeekDay> weekdays = new ArrayList<>();
+				if (days != null) {
+					for (String day : days) {
+						logger.debug("days {}", day);
+						weekdays.add(WeekDay.valueOf(day));
+					}
 
-				for (String day : days) {
-					logger.debug("days {}", day);
-					weekdays.add(WeekDay.valueOf(day));
-				}
-				if (!weekdays.isEmpty()) {
 					List<Group> groups = factory.getGroupService().readByWeekDay(weekdays);
-					content.setSessionAttribute("groups", groups);
-
-					result = new PageResult(ConfigurationManager.getProperty("path.page.chooseGroupByWeekDay"),
-							false);
+					request.setAttribute("groups", groups);
 				}
 			}
+			page = ConfigurationManager.getProperty("path.page.chooseGroupByWeekDay");
 		} catch (ServiceException e) {
-			content.setRequestParameter("errorMessage", MessageManager.getProperty("errorMessage", language));
-			result = new PageResult(ConfigurationManager.getProperty("path.page.error"), false);
+			page = ConfigurationManager.getProperty("path.page.error");
+			request.setAttribute("errorMessage", manager.getProperty("errorMessage"));
 		}
-		return result;
+		return page;
 	}
 }

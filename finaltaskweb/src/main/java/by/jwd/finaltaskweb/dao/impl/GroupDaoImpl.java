@@ -104,7 +104,6 @@ public class GroupDaoImpl extends StudioDaoImpl implements GroupDao {
 		try {
 			statement = connection.prepareStatement(SQL_DELETE_BY_ID);
 			statement.setInt(1, id);
-			logger.debug("statemenet {}", statement);
 			statement.executeUpdate();
 		} catch (SQLException e) {
 			throw new DaoException();
@@ -265,12 +264,12 @@ public class GroupDaoImpl extends StudioDaoImpl implements GroupDao {
 
 		try {
 			statement = connection.prepareStatement(SQL_INSERT_GROUP, Statement.RETURN_GENERATED_KEYS);
-
+		
 			statement.setString(1, group.getTitle());
 			statement.setInt(2, group.getTeacher().getId());
 			statement.setString(3, group.getLevel().toString());
 			logger.debug(statement.toString());
-
+		
 			statement.executeUpdate();
 			logger.debug("group has been created");
 

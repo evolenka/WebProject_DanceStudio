@@ -12,7 +12,6 @@ import org.testng.annotations.Test;
 
 import by.jwd.finaltaskweb.dao.DaoException;
 import by.jwd.finaltaskweb.dao.DaoFactory;
-import by.jwd.finaltaskweb.dao.TransactionImpl;
 import by.jwd.finaltaskweb.dao.pool.ConnectionPool;
 import by.jwd.finaltaskweb.entity.DanceClass;
 import by.jwd.finaltaskweb.entity.Membership;
@@ -59,11 +58,9 @@ public class UpdateVisitStatusAndCancelTest {
 		visitNew.setStatus(Status.ATTENDED);
 
 		Connection connection = ConnectionPool.getInstance().getConnection();
-		TransactionImpl transaction = new TransactionImpl(connection);
-		DaoFactory factory = DaoFactory.getInstance();
-		
-		factory.getVisitDao(transaction).updateStatus(visitOld, Status.ATTENDED);
-		Visit  actual = factory.getVisitDao(transaction).readEntityById(4);
+		DaoFactory factory = new DaoFactory (connection);
+		factory.getVisitDao().updateStatus(visitOld, Status.ATTENDED);
+		Visit  actual = factory.getVisitDao().readEntityById(4);
 		logger.debug(actual);
 		assertEquals(actual, visitNew);
 	}
@@ -82,11 +79,9 @@ public class UpdateVisitStatusAndCancelTest {
 		visitNew.setStatus(Status.PLANNED);
 
 		Connection connection = ConnectionPool.getInstance().getConnection();
-		TransactionImpl transaction = new TransactionImpl(connection);
-		DaoFactory factory = DaoFactory.getInstance();
-		
-		factory.getVisitDao(transaction).cancelUpdateStatus(visitOld);
-		Visit  actual = factory.getVisitDao(transaction).readEntityById(4);
+		DaoFactory factory = new DaoFactory (connection);
+		factory.getVisitDao().cancelUpdateStatus(visitOld);
+		Visit  actual = factory.getVisitDao().readEntityById(4);
 		logger.debug(actual);
 		assertEquals(actual, visitNew);
 	}
@@ -106,11 +101,9 @@ public class UpdateVisitStatusAndCancelTest {
 		visitNew.setStatus(Status.ABSENT);
 
 		Connection connection = ConnectionPool.getInstance().getConnection();
-		TransactionImpl transaction = new TransactionImpl(connection);
-		DaoFactory factory = DaoFactory.getInstance();
-		
-		factory.getVisitDao(transaction).updateStatus(visitOld, Status.ABSENT);
-		Visit  actual = factory.getVisitDao(transaction).readEntityById(3);
+		DaoFactory factory = new DaoFactory (connection);
+		factory.getVisitDao().updateStatus(visitOld, Status.ABSENT);
+		Visit  actual = factory.getVisitDao().readEntityById(3);
 		logger.debug(actual);
 		assertEquals(actual, visitNew);
 	}
@@ -129,10 +122,9 @@ public class UpdateVisitStatusAndCancelTest {
 		visitNew.setStatus(Status.PLANNED);
 
 		Connection connection = ConnectionPool.getInstance().getConnection();
-		TransactionImpl transaction = new TransactionImpl(connection);
-		DaoFactory factory = DaoFactory.getInstance();
-		factory.getVisitDao(transaction).cancelUpdateStatus(visitOld);
-		Visit  actual = factory.getVisitDao(transaction).readEntityById(3);
+		DaoFactory factory = new DaoFactory (connection);
+		factory.getVisitDao().cancelUpdateStatus(visitOld);
+		Visit  actual = factory.getVisitDao().readEntityById(3);
 		logger.debug(actual);
 		assertEquals(actual, visitNew);
 	}	

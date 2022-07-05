@@ -1,15 +1,18 @@
 package by.jwd.finaltaskweb.controller.impl;
 
+import javax.servlet.http.HttpServletRequest;
 
 import by.jwd.finaltaskweb.controller.Command;
 import by.jwd.finaltaskweb.controller.ConfigurationManager;
-import by.jwd.finaltaskweb.controller.PageResult;
-import by.jwd.finaltaskweb.controller.SessionRequestContent;
 
 public class EmptyCommandImpl implements Command {
-	
 	@Override
-	public PageResult execute(SessionRequestContent content) {
-		return new PageResult (ConfigurationManager.getProperty("path.page.index"), false);
+	public String execute(HttpServletRequest request) {
+		/*
+		 * в случае ошибки или прямого обращения к контроллеру переадресация на страницу
+		 * ввода логина
+		 */
+		String page = ConfigurationManager.getProperty("path.page.index");
+		return page;
 	}
 }
