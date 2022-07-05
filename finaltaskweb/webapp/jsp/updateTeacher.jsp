@@ -59,16 +59,15 @@
 									value="${teacher.surname }" readonly> <label for="name"><fmt:message
 										key="updateProfile.name" bundle="${ rb }" /></label><br> <input
 									type="text" class="form-control" id="name" name="name"
-									value="${teacher.name }" readonly> <label
-									for="style"><fmt:message key="registration.style"
-										bundle="${ rb }" /></label><br> <input type="text"
-									class="form-control" id="style" name="style"
+									value="${teacher.name }" readonly> <label for="style"><fmt:message
+										key="registration.style" bundle="${ rb }" /></label><br> <input
+									type="text" class="form-control" id="style" name="style"
 									value="${teacher.danceStyle}" readonly="readonly"> <label
-									for="portfolio"><fmt:message key="registration.portfolio"
-										bundle="${ rb }" /></label><br>
-									<input type="text"
-									class="form-control" id="portfolio" name="portfolio"
-									value="${teacher.portfolio}" readonly="readonly">	
+									for="portfolio"><fmt:message
+										key="registration.portfolio" bundle="${ rb }" /></label><br> <input
+									type="text" class="form-control" id="portfolio"
+									name="portfolio" value="${teacher.portfolio}"
+									readonly="readonly">
 								<button type="button" class="btn colorBtn" onclick="isEdit()">
 									<fmt:message key="edit" bundle="${ rb }" />
 								</button>
@@ -79,10 +78,6 @@
 							</form>
 							<p class=success>
 								<c:out value="${successUpdateUserMessage}" />
-							</p>
-							<p class=error>
-								<c:out value="${errorMessage }" />
-								<c:out value="${errorNoSession}" />
 							</p>
 						</div>
 						<div class="col-sm-2 col-lg-4"></div>

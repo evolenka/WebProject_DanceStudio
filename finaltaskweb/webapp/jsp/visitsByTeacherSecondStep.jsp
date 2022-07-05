@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="<c:out value="${css}"/>">
 <c:url value="img/favicon.ico" var="icon" />
 <link rel="icon" href="<c:out value="${icon}"/>">
-<c:url value="visitsByTeacher1.jsp" var="visitsByTeacher1" />
+<c:url value="visitsByTeacherFirstStep.jsp" var="visitsByTeacherFirstStep" />
 </head>
 <body>
 	<div class="wrapper">
@@ -90,7 +90,7 @@
 						</div>
 					</form>
 					<a class="btn  colorBtn"
-						href='<c:out value="${visitsByTeacher1}"/>'> <fmt:message
+						href='<c:out value="${visitsByTeacherFirstStep}"/>'> <fmt:message
 							key="back" bundle="${ rb }" />
 					</a>
 					<p>

@@ -15,6 +15,7 @@ import org.testng.annotations.Test;
 
 import by.jwd.finaltaskweb.dao.DaoException;
 import by.jwd.finaltaskweb.dao.DaoFactory;
+import by.jwd.finaltaskweb.dao.TransactionImpl;
 import by.jwd.finaltaskweb.dao.pool.ConnectionPool;
 import by.jwd.finaltaskweb.entity.Group;
 import by.jwd.finaltaskweb.entity.Level;
@@ -103,10 +104,11 @@ public class CreateAndDeleteGroupTest {
 		expected.add(group8);
 		
 		Connection connection = ConnectionPool.getInstance().getConnection();
-		DaoFactory factory = new DaoFactory (connection);
+		TransactionImpl transaction = new TransactionImpl(connection);
+		DaoFactory factory = DaoFactory.getInstance();
 		
-		factory.getGroupDao().create(group8);
-		List<Group> actual = factory.getGroupDao().readAll();
+		factory.getGroupDao(transaction).create(group8);
+		List<Group> actual = factory.getGroupDao(transaction).readAll();
 		logger.debug("actual {}", actual);
 		logger.debug("expected {}", expected);
 		assertEquals(actual, expected);
@@ -163,12 +165,13 @@ public class CreateAndDeleteGroupTest {
 		
 
 		Connection connection = ConnectionPool.getInstance().getConnection();
-		DaoFactory factory = new DaoFactory (connection);
+		TransactionImpl transaction = new TransactionImpl(connection);
+		DaoFactory factory = DaoFactory.getInstance();
 		
-		List<Group> all = factory.getGroupDao().readAll();
+		List<Group> all = factory.getGroupDao(transaction).readAll();
 		Group lastAdded = all.get(all.size()-1);
-		factory.getGroupDao().delete(lastAdded.getId());
-		List<Group> actual = factory.getGroupDao().readAll();
+		factory.getGroupDao(transaction).delete(lastAdded.getId());
+		List<Group> actual = factory.getGroupDao(transaction).readAll();
 		assertEquals(actual, expected);
 	}
 }

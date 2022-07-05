@@ -53,7 +53,7 @@
 							<fmt:message key="choose" bundle="${ rb }" />
 						</button>
 					</form>
-				
+
 					<c:if test="${not empty quantity}">
 						<div class="table-responsive">
 							<table>
@@ -70,11 +70,8 @@
 							</table>
 						</div>
 					</c:if>
-				
+				</div>
 			</div>
-			<p>
-				<c:out value="${errorNoSession}" />
-			</p>
 		</div>
 		<u:footer />
 	</div>

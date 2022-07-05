@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="<c:out value="${css}"/>">
 <c:url value="img/favicon.ico" var="icon" />
 <link rel="icon" href="<c:out value="${icon}"/>">
-<c:url value="enrollment3.jsp" var="enrollment3" />
+<c:url value="enrollmentThirdStep.jsp" var="enrollmentThirdStep" />
 </head>
 <body>
 	<div class="wrapper">
@@ -87,7 +87,7 @@
 					<p>
 						<c:out value="${successVisitMessage}" />
 						<c:out value="${errorVisitMessage}" />
-						<c:out value="${errorNoSession}" />
+						
 					</p>
 				</div>
 			</div>

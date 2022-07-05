@@ -75,11 +75,8 @@
 					</c:if>
 				</div>
 			</div>
-			<p>
-			<c:out value="${errorNoSession}" />
-		</p>
-	</div>
-	<u:footer />
+		</div>
+		<u:footer />
 	</div>
 </body>
 </html>

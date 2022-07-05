@@ -80,9 +80,6 @@
 					<p class=success>
 						<c:out value="${successUpdatePassMessage}" />
 					</p>
-					<p class=error>
-						<c:out value="${errorMessage }" />
-					</p>
 					<p class="text-small">
 						<fmt:message key="comment" bundle="${ rb }" />
 					</p>

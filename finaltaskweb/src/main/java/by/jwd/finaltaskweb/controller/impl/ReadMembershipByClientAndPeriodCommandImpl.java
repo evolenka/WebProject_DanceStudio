@@ -3,8 +3,6 @@ package by.jwd.finaltaskweb.controller.impl;
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,80 +10,60 @@ import org.apache.logging.log4j.Logger;
 import by.jwd.finaltaskweb.controller.Command;
 import by.jwd.finaltaskweb.controller.ConfigurationManager;
 import by.jwd.finaltaskweb.controller.MessageManager;
+import by.jwd.finaltaskweb.controller.PageResult;
+import by.jwd.finaltaskweb.controller.SessionRequestContent;
 import by.jwd.finaltaskweb.entity.Membership;
 import by.jwd.finaltaskweb.service.ServiceException;
 import by.jwd.finaltaskweb.service.ServiceFactory;
 
+/**
+ * ReadMembershipByClientAndPeriodCommandImpl implements command for viewing by client all
+ * his memberships purchased for the selected period
+ * 
+ * @author Evlashkina
+ *
+ */
+
 public class ReadMembershipByClientAndPeriodCommandImpl implements Command {
 
-	private static Logger logger = LogManager.getLogger(ReadValidMembershipsByClientCommandImpl.class);
+	private static Logger logger = LogManager.getLogger(ReadMembershipByClientAndPeriodCommandImpl.class);
 
 	private ServiceFactory factory = ServiceFactory.getInstance();
 
 	@Override
-	public String execute(HttpServletRequest request) {
+	public PageResult execute(SessionRequestContent content) {
 
-		String page = null;
+		PageResult result = null;
 
-		HttpSession session = request.getSession(true);
-		String language = (String) session.getAttribute("language");
-
+		String language = (String) content.getSessionAttribute("language");
 		logger.debug("language {}", language);
 
-		MessageManager manager;
+		Integer clientId = (Integer)(content.getSessionAttribute("clientId"));
+		logger.debug("client id {}", clientId);
 
-		switch (language) {
-		case "en", "en_US":
-			manager = MessageManager.EN;
-			break;
-		case "ru", "ru_RU":
-			manager = MessageManager.RU;
-			break;
-		case "be", "be_BY":
-			manager = MessageManager.BY;
-			break;
-		default:
-			manager = MessageManager.EN;
-		}
+		LocalDate startDate = LocalDate.parse(content.getRequestParameter("startdate"));
+		logger.debug("startdate {}", startDate);
 
-		Integer id = (Integer) session.getAttribute("clientId");
-		logger.debug("clientId {}", id);
-
-		session.setAttribute("isCheckedPeriod", true);
-		logger.debug("isCheckedPeriod {}", session.getAttribute("isCheckedPeriod"));
+		LocalDate endDate = LocalDate.parse(content.getRequestParameter("enddate"));
+		logger.debug("enddate {}", endDate);
 
 		try {
-			if (id == null) {
-				request.setAttribute("errorNoSession", manager.getProperty("errorNoSession"));
-			} else {
+			if (clientId != null && startDate != null && endDate != null) {
 
-				if (request.getParameter("startdate") != null && request.getParameter("enddate") != null) {
-					session.setAttribute("startdate", request.getParameter("startdate"));
-					session.setAttribute("enddate", request.getParameter("enddate"));
-				}
+				content.setSessionAttribute("isCheckedPeriod", true);
 
-				if (session.getAttribute("startdate") != null && session.getAttribute("enddate") != null) {
+				List<Membership> memberships = factory.getMembershipService().readByClientAndPeriod(clientId, startDate,
+						endDate);
+				content.setSessionAttribute("memberships", memberships);
+				content.setSessionAttribute("startdate", startDate);
+				content.setSessionAttribute("enddate", endDate);
 
-					LocalDate startDate = LocalDate.parse((String) session.getAttribute("startdate"));
-					logger.debug("startdate {}", startDate);
-
-					LocalDate endDate = LocalDate.parse((String) session.getAttribute("enddate"));
-					logger.debug("enddate {}", endDate);
-
-					List<Membership> memberships = factory.getMembershipService().readByClientAndPeriod(id, startDate,
-							endDate);
-					request.setAttribute("memberships", memberships);
-
-				} else {
-					request.setAttribute("errorNoSession", manager.getProperty("errorNoSession"));
-				}
+				result = new PageResult(ConfigurationManager.getProperty("path.page.myMemberships"), false);
 			}
 		} catch (ServiceException e) {
-			request.setAttribute("errorMessage", manager.getProperty("errorMessage"));
-			page = ConfigurationManager.getProperty("path.page.error");
-
+			content.setRequestParameter("errorMessage", MessageManager.getProperty("errorMessage", language));
+			result = new PageResult(ConfigurationManager.getProperty("path.page.error"), false);
 		}
-		page = ConfigurationManager.getProperty("path.page.myMemberships");
-		return page;
+		return result;
 	}
 }

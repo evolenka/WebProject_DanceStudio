@@ -15,6 +15,7 @@ import org.testng.annotations.Test;
 
 import by.jwd.finaltaskweb.dao.DaoException;
 import by.jwd.finaltaskweb.dao.DaoFactory;
+import by.jwd.finaltaskweb.dao.TransactionImpl;
 import by.jwd.finaltaskweb.dao.pool.ConnectionPool;
 import by.jwd.finaltaskweb.entity.Group;
 import by.jwd.finaltaskweb.entity.Schedule;
@@ -88,7 +89,7 @@ List <Schedule> expected = new ArrayList<>();
 		schedule6.setGroup (new Group (3));
 		
 		Schedule schedule7 = new Schedule (8);
-		schedule7.setWeekDay(WeekDay.SUNDAY);
+		schedule7.setWeekDay(WeekDay.FRIDAY);
 		schedule7.setTime(LocalTime.of(20,00));
 		schedule7.setDuration(60);
 		schedule7.setGroup (new Group (7));
@@ -102,9 +103,11 @@ List <Schedule> expected = new ArrayList<>();
 		expected.add(schedule7);
 		
 		Connection connection = ConnectionPool.getInstance().getConnection();
-		DaoFactory factory = new DaoFactory (connection);
-		factory.getScheduleDao().update(schedule7);
-		List<Schedule> actual = factory.getScheduleDao().readAll();
+		TransactionImpl transaction = new TransactionImpl(connection);
+		DaoFactory factory = DaoFactory.getInstance();
+		
+		factory.getScheduleDao(transaction).update(schedule7);
+		List<Schedule> actual = factory.getScheduleDao(transaction).readAll();
 		logger.debug(actual);
 		assertEquals(actual, expected);
 	}
@@ -166,10 +169,11 @@ List <Schedule> expected = new ArrayList<>();
 		expected.add(schedule7);
 			
 		Connection connection = ConnectionPool.getInstance().getConnection();
-		DaoFactory factory = new DaoFactory (connection);
+		TransactionImpl transaction = new TransactionImpl(connection);
+		DaoFactory factory = DaoFactory.getInstance();
 		
-		factory.getScheduleDao().update(schedule7);
-		List<Schedule> actual = factory.getScheduleDao().readAll();
+		factory.getScheduleDao(transaction).update(schedule7);
+		List<Schedule> actual = factory.getScheduleDao(transaction).readAll();
 		logger.debug(actual);
 		assertEquals(actual, expected);
 	}

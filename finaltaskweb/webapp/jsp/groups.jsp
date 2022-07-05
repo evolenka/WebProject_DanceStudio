@@ -47,11 +47,11 @@
 		<u:mainmenu />
 		<div class="content conteiner-fluid">
 			<div class=row>
-			<div class="col-lg-12">
-				<h1 class="subtitle">
+				<div class="col-lg-12">
+					<h1 class="subtitle">
 						<fmt:message key="groups" bundle="${ rb }" />
 					</h1>
-					</div>
+				</div>
 				<div class="col-lg-2">
 					<u:adminmenu />
 				</div>
@@ -112,9 +112,6 @@
 							</table>
 						</div>
 					</c:if>
-					<p>
-						<c:out value="${errorNoSession}" />
-					</p>
 				</div>
 			</div>
 		</div>

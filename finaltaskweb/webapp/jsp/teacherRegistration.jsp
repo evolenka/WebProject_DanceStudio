@@ -28,61 +28,69 @@
 	<div class="wrapper">
 		<u:mainmenu />
 		<div class="content conteiner-fluid">
-			<h1 class="subtitle">
-				<fmt:message key="registrationForm" bundle="${ rb }" />
-			</h1>
-			<div class="row">
-				<div class="col-sm-2 col-lg-4"></div>
-				<div class="col-sm-8 col-lg-4">
-					<form method="post" action="action" class="needs-validation">
-						<label for="login"><fmt:message key="registration.login"
-								bundle="${ rb }" /></label><br> <input type="text"
-							class="form-control" id="login" name="login" required>
-						<p class=error>
-							<c:out value="${errorLoginMessage}" />
-						</p>
-						<label for="password"><fmt:message
-								key="registration.password" bundle="${ rb }" /></label><br> <input
-							type="password" class="form-control" id="password"
-							name="password" required> <label for="confirmPassword"><fmt:message
-								key="registration.confirmPassword" bundle="${ rb }" /></label><br>
-						<input type="password" class="form-control" id="confirmPassword"
-							name="confirmPassword" required>
-						<p class=error>
-							<c:out value="${errorPassMatchMessage}" />
-						</p>
-						<label for="surname"><fmt:message
-								key="registration.surname" bundle="${ rb }" /></label><br> <input
-							type="text" class="form-control" id="surname" name="surname"
-							required> <label for="name"><fmt:message
-								key="registration.name" bundle="${ rb }" /></label><br> <input
-							type="text" class="form-control" id="name" name="name" required>
-						<label for="style"><fmt:message
-								key="registration.style" bundle="${ rb }" /></label><br> <input
-							type="text" class="form-control" id="style"
-							name="style" required> <label for="portfolio"><fmt:message
-								key= "registration.portfolio" bundle="${ rb }" /></label><br> <input
-							type="text" class="form-control" id="portfolio" name="portfolio"> 
-						<br>
-						<button type="submit" class="btn btn-secondary pl-3"
-							name="command" value="TEACHERREGISTRATION">
-							<fmt:message key="register" bundle="${ rb }" />
-						</button>
-						<a class="btn btn-light text-dark"
-							href='<c:out value="${regLink}"/>'><fmt:message key="resert"
-								bundle="${ rb }" /></a>
-					</form>
-					<p class=success>
-						<c:out value="${successRegMessage}" />
-					</p>
-					<p class=error>
-						<c:out value="${errorRegMessage }" />
-					</p>
-					<p class= "text-small">
-						<fmt:message key="comment" bundle="${ rb }" />
-					</p>
+			<div class=row>
+				<div class="col-lg-2">
+					<u:adminmenu />
 				</div>
-				<div class="col-sm-2 col-lg-4"></div>
+				<div class="col-lg-10">
+					<h1 class="subtitle">
+
+						<fmt:message key="registrationForm" bundle="${ rb }" />
+					</h1>
+					<div class="row">
+						<div class="col-sm-2 col-lg-4"></div>
+						<div class="col-sm-8 col-lg-4">
+							<form method="post" action="action" class="needs-validation">
+								<label for="login"><fmt:message key="registration.login"
+										bundle="${ rb }" /></label><br> <input type="text"
+									class="form-control" id="login" name="login" required>
+								<p class=error>
+									<c:out value="${errorLoginMessage}" />
+								</p>
+								<label for="password"><fmt:message
+										key="registration.password" bundle="${ rb }" /></label><br> <input
+									type="password" class="form-control" id="password"
+									name="password" required> <label for="confirmPassword"><fmt:message
+										key="registration.confirmPassword" bundle="${ rb }" /></label><br>
+								<input type="password" class="form-control" id="confirmPassword"
+									name="confirmPassword" required>
+								<p class=error>
+									<c:out value="${errorPassMatchMessage}" />
+								</p>
+								<label for="surname"><fmt:message
+										key="registration.surname" bundle="${ rb }" /></label><br> <input
+									type="text" class="form-control" id="surname" name="surname"
+									required> <label for="name"><fmt:message
+										key="registration.name" bundle="${ rb }" /></label><br> <input
+									type="text" class="form-control" id="name" name="name" required>
+								<label for="style"><fmt:message key="registration.style"
+										bundle="${ rb }" /></label><br> <input type="text"
+									class="form-control" id="style" name="style" required>
+								<label for="portfolio"><fmt:message
+										key="registration.portfolio" bundle="${ rb }" /></label><br> <input
+									type="text" class="form-control" id="portfolio"
+									name="portfolio"> <br>
+								<button type="submit" class="btn btn-secondary pl-3"
+									name="command" value="TEACHERREGISTRATION">
+									<fmt:message key="register" bundle="${ rb }" />
+								</button>
+								<a class="btn btn-light text-dark"
+									href='<c:out value="${regLink}"/>'><fmt:message
+										key="resert" bundle="${ rb }" /></a>
+							</form>
+							<p class=success>
+								<c:out value="${successRegMessage}" />
+							</p>
+							<p class=error>
+								<c:out value="${errorRegMessage }" />
+							</p>
+							<p class="text-small">
+								<fmt:message key="comment" bundle="${ rb }" />
+							</p>
+						</div>
+						<div class="col-sm-2 col-lg-4"></div>
+					</div>
+				</div>
 			</div>
 		</div>
 		<u:footer />

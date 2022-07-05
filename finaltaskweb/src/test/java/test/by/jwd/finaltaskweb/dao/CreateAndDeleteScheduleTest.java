@@ -15,6 +15,7 @@ import org.testng.annotations.Test;
 
 import by.jwd.finaltaskweb.dao.DaoException;
 import by.jwd.finaltaskweb.dao.DaoFactory;
+import by.jwd.finaltaskweb.dao.TransactionImpl;
 import by.jwd.finaltaskweb.dao.pool.ConnectionPool;
 import by.jwd.finaltaskweb.entity.Group;
 import by.jwd.finaltaskweb.entity.Schedule;
@@ -94,7 +95,7 @@ List <Schedule> expected = new ArrayList<>();
 		schedule7.setGroup (new Group (7));
 		
 		Schedule schedule8 = new Schedule (11);//need to be updated
-		schedule8.setWeekDay(WeekDay.SUNDAY);
+		schedule8.setWeekDay(WeekDay.FRIDAY);
 		schedule8.setTime(LocalTime.of(18,00));
 		schedule8.setDuration(90);
 		schedule8.setGroup (new Group (5));
@@ -109,9 +110,11 @@ List <Schedule> expected = new ArrayList<>();
 		expected.add(schedule8);
 		
 		Connection connection = ConnectionPool.getInstance().getConnection();
-		DaoFactory factory = new DaoFactory (connection);
-		factory.getScheduleDao().create(schedule8);
-		List<Schedule> actual = factory.getScheduleDao().readAll();
+		TransactionImpl transaction = new TransactionImpl(connection);
+		DaoFactory factory = DaoFactory.getInstance();
+		
+		factory.getScheduleDao(transaction).create(schedule8);
+		List<Schedule> actual = factory.getScheduleDao(transaction).readAll();
 		logger.debug("actual {}", actual);
 		logger.debug("expected {}", expected);
 		assertEquals(actual, expected);
@@ -174,11 +177,13 @@ List <Schedule> expected = new ArrayList<>();
 		expected.add(schedule7);
 		
 		Connection connection = ConnectionPool.getInstance().getConnection();
-		DaoFactory factory = new DaoFactory (connection);
-		List<Schedule> all = factory.getScheduleDao().readAll();
+		TransactionImpl transaction = new TransactionImpl(connection);
+		DaoFactory factory = DaoFactory.getInstance();
+		
+		List<Schedule> all = factory.getScheduleDao(transaction).readAll();
 		Schedule lastAdded = all.get(all.size()-1);
-		factory.getScheduleDao().delete(lastAdded.getId());
-		List<Schedule> actual = factory.getScheduleDao().readAll();
+		factory.getScheduleDao(transaction).delete(lastAdded.getId());
+		List<Schedule> actual = factory.getScheduleDao(transaction).readAll();
 		assertEquals(actual, expected);
 	}
 }

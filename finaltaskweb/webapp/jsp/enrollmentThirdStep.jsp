@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="<c:out value="${css}"/>">
 <c:url value="img/favicon.ico" var="icon" />
 <link rel="icon" href="<c:out value="${icon}"/>">
-<c:url value="enrollment2.jsp" var="enrollment2" />
+<c:url value="enrollmentSecondStep.jsp" var="enrollmentSecondStep.jsp" />
 </head>
 <body>
 	<div class="wrapper">
@@ -92,7 +92,7 @@
 						</form>
 					</c:if>
 					<p>
-						<c:out value="${errorNoSession}" />
+						<c:out value="${noMemberships}" />
 					</p>
 				</div>
 			</div>

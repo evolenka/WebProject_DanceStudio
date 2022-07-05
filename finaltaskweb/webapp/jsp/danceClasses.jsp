@@ -83,13 +83,10 @@
 									</tr>
 								</c:forEach>
 							</table>
-							</c:if>
+						</c:if>
 					</form>
 					<p>
 						<c:out value="${noClasses}" />
-					</p>
-					<p>
-						<c:out value="${errorNoSession}" />
 					</p>
 				</div>
 			</div>

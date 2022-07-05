@@ -16,6 +16,7 @@ import org.testng.annotations.Test;
 
 import by.jwd.finaltaskweb.dao.DaoException;
 import by.jwd.finaltaskweb.dao.DaoFactory;
+import by.jwd.finaltaskweb.dao.TransactionImpl;
 import by.jwd.finaltaskweb.dao.pool.ConnectionPool;
 import by.jwd.finaltaskweb.entity.Client;
 import by.jwd.finaltaskweb.entity.Membership;
@@ -120,10 +121,11 @@ public class CreateAndDeleteMembershipTest {
 	
 
 		Connection connection = ConnectionPool.getInstance().getConnection();
-		DaoFactory factory = new DaoFactory (connection);
+		TransactionImpl transaction = new TransactionImpl(connection);
+		DaoFactory factory = DaoFactory.getInstance();
 		
-		factory.getMembershipDao().create(membership8);
-		List<Membership> actual = factory.getMembershipDao().readAll();
+		factory.getMembershipDao(transaction).create(membership8);
+		List<Membership> actual = factory.getMembershipDao(transaction).readAll();
 		
 		logger.debug("actual {}", actual);
 		assertEquals(actual, expected);
@@ -195,12 +197,13 @@ public class CreateAndDeleteMembershipTest {
 		expected.add(membership7);
 		
 		Connection connection = ConnectionPool.getInstance().getConnection();
-		DaoFactory factory = new DaoFactory (connection);
+		TransactionImpl transaction = new TransactionImpl(connection);
+		DaoFactory factory = DaoFactory.getInstance();
 		
-		List<Membership> all = factory.getMembershipDao().readAll();
+		List<Membership> all = factory.getMembershipDao(transaction).readAll();
 		Membership lastAdded = all.get(all.size()-1);
-		factory.getMembershipDao().delete(lastAdded.getId());
-		List<Membership> actual = factory.getMembershipDao().readAll();
+		factory.getMembershipDao(transaction).delete(lastAdded.getId());
+		List<Membership> actual = factory.getMembershipDao(transaction).readAll();
 		assertEquals(actual, expected);
 	}
 }

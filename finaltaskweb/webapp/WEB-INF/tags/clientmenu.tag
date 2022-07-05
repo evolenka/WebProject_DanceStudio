@@ -6,11 +6,12 @@
 	scope="session" />
 <fmt:setLocale value="${language}" />
 <fmt:setBundle basename="pagecontent" var="rb" />
-<c:url value="enrollment1.jsp" var="enrollment1" />
+<c:url value="enrollmentFirstStep.jsp" var="enrollmentFirstStep" />
 <c:url value="myVisits.jsp" var="myVisits" />
 <c:url value="myMemberships.jsp" var="myMemberships" />
 <c:url value="changePassword.jsp" var="changePass" />
 <c:url value="updateClient.jsp" var="updateClient" />
+
 <script
 	src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
 <script
@@ -43,7 +44,7 @@
 				</div>
 			</li>
 			<li class="nav-item "><a class="btn clientMenuBtn btn-light"
-				href='<c:out value="${enrollment1}"/>'> <fmt:message
+				href='<c:out value="${enrollmentFirstStep}"/>'> <fmt:message
 						key="clientMain.enrollment" bundle="${ rb }" /></a></li>
 			<li class="nav-item" style="margin-bottom: 30px">
 

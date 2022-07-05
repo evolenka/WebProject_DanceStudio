@@ -92,9 +92,6 @@
 							</table>
 						</div>
 					</c:if>
-					<p>
-						<c:out value="${errorNoSession}" />
-					</p>
 				</div>
 			</div>
 		</div>

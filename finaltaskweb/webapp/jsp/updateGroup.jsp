@@ -74,7 +74,7 @@
 								<br> <label for="weekday"> <fmt:message
 										key="weekday" bundle="${ rb }" /></label><br>
 								<c:forEach var="weekday" items="${weekdays}">
-								<input type="checkbox" id="weekday" name="weekday"
+									<input type="checkbox" id="weekday" name="weekday"
 										<c:forEach var="scheduleItem" items="${group.schedule}">
 								value="${weekday}" ${scheduleItem.weekDay == weekday ? 'checked' : ''}</c:forEach>>
 									<fmt:message key="${weekday}" bundle="${ rb }" />
@@ -100,10 +100,6 @@
 							</form>
 							<p class=success>
 								<c:out value="${successUpdateUserMessage}" />
-							</p>
-							<p class=error>
-								<c:out value="${errorMessage }" />
-								<c:out value="${errorNoSession}" />
 							</p>
 						</div>
 						<div class="col-sm-2 col-lg-4"></div>

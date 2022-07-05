@@ -65,18 +65,17 @@
 							</tr>
 						</table>
 						<label for="membershipStartDate"><fmt:message
-								key="purchaseMembership.startDateMessage" bundle="${ rb }"/></label><br>
+								key="purchaseMembership.startDateMessage" bundle="${ rb }" /></label><br>
 						<input type="date" class="form-control" id="membershipStartDate"
 							name="membershipStartDate" required>
 						<button type="submit" class="btn colorBtn" name="command"
 							value="CREATEMEMBERSHIP">
-							<fmt:message key="purchase" bundle="${ rb }"/>
+							<fmt:message key="purchase" bundle="${ rb }" />
 						</button>
 					</form>
 					<p>
-						<c:out value="${successPurchaseMessage}"/>
-						<c:out value="${errorPurchaseMessage}"/>
-						<c:out value="${errorNoSession}"/>
+						<c:out value="${successPurchaseMessage}" />
+						<c:out value="${errorPurchaseMessage}" />
 					</p>
 				</div>
 			</div>

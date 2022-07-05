@@ -15,6 +15,7 @@ import org.testng.annotations.Test;
 
 import by.jwd.finaltaskweb.dao.DaoException;
 import by.jwd.finaltaskweb.dao.DaoFactory;
+import by.jwd.finaltaskweb.dao.TransactionImpl;
 import by.jwd.finaltaskweb.dao.pool.ConnectionPool;
 import by.jwd.finaltaskweb.entity.DanceClass;
 import by.jwd.finaltaskweb.entity.Schedule;
@@ -75,8 +76,9 @@ public class ReadDanceClassByIdTest {
 	public void testReadById(Integer id, DanceClass expected) throws DaoException {
 
 		Connection connection = ConnectionPool.getInstance().getConnection();
-		DaoFactory factory = new DaoFactory(connection);
-		DanceClass actual = factory.getDanceClassDao().readEntityById(id);
+		TransactionImpl transaction = new TransactionImpl(connection);
+		DaoFactory factory = DaoFactory.getInstance();
+		DanceClass actual = factory.getDanceClassDao(transaction).readEntityById(id);
 		assertEquals(actual, expected);
 	}
 }

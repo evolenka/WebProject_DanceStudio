@@ -6,10 +6,25 @@
 	scope="session" />
 <fmt:setLocale value="${language}" />
 <fmt:setBundle basename="pagecontent" var="rb" />
+<script
+	src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+<script
+	src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+
 <c:url value="index.jsp" var="main" />
 <c:url value="clientMain.jsp" var="clientMain" />
 <c:url value="teacherMain.jsp" var="teacherMain" />
 <c:url value="adminMain.jsp" var="adminMain" />
+
+<script>
+	function replaceUrl() {
+		var lang = document.getElementById('language').value;
+		var url = "${pageContext.request.requestURL}";
+		return url + '?&language=' + lang;
+	};
+</script>
 
 <div class="conteiner-fluid">
 	<nav class="navbar navbar-expand-sm navbar-dark">
@@ -66,7 +81,8 @@
 		</div>
 		<div class="dropdown">
 			<form>
-				<select id="language" name="language" onchange="submit()">
+				<select id="language" name="language"
+					onchange="document.location.replace(replaceUrl())">
 					<option value="ru_RU" ${language == 'ru_RU' ? 'selected' : ''}>RU</option>
 					<option value="en_US" ${language == 'en_US' ? 'selected' : ''}>EN</option>
 					<option value="be_BY" ${language == 'be_BY' ? 'selected' : ''}>BY</option>

@@ -53,9 +53,6 @@
 							</button>
 						</form>
 					</div>
-					<p>
-						<c:out value="${errorNoSession}" />
-					</p>
 				</div>
 			</div>
 		</div>

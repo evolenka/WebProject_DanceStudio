@@ -70,9 +70,6 @@
 							</button>
 						</c:if>
 					</form>
-					<p>
-					<c:out value="${errorNoSession}" />
-				</p>
 			</div>
 		</div>
 	</div>

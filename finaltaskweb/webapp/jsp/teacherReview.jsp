@@ -39,10 +39,12 @@
 					<table>
 						<tr>
 							<td><img class="float-right"
-								src="<c:out value="${ teacher1 }"/>" alt="teacher1" width="250" height="250"> <c:out value="${visits.danceclass.date}" /></td>
+								src="<c:out value="${ teacher1 }"/>" alt="teacher1" width="250"
+								height="250"> <c:out value="${visits.danceclass.date}" /></td>
 						</tr>
 						<tr>
-							<td><img class="float-right" src="<c:out value="${ teacher2 }"/>" alt="teacher2" width="250"
+							<td><img class="float-right"
+								src="<c:out value="${ teacher2 }"/>" alt="teacher2" width="250"
 								height="250"></td>
 						</tr>
 						<tr>
@@ -81,7 +83,7 @@
 				</div>
 			</div>
 		</div>
-		<u:footer/>
+		<u:footer />
 	</div>
 </body>
 </html>

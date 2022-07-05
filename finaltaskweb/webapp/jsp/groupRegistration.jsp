@@ -28,72 +28,77 @@
 	<div class="wrapper">
 		<u:mainmenu />
 		<div class="content conteiner-fluid">
-			<h1 class="subtitle">
-				<fmt:message key="registrationForm" bundle="${ rb }" />
-			</h1>
-			<div class="row">
-				<div class="col-sm-2 col-lg-4"></div>
-				<div class="col-sm-8 col-lg-4">
-					<form method="post" action="action" class="needs-validation">
-						<label for="group"><fmt:message key="group.title"
-								bundle="${ rb }" /></label><br> <input type="text"
-							class="form-control" id="group" name="group" required>
-						<p class=error>
-							<c:out value="${errorGroupTitleMessage}" />
-						</p>
-						<label for="teacher"> <fmt:message key="teacher"
-								bundle="${ rb }" /></label><br> <select id="teacher"
-							name="teacher">
-							<c:forEach var="teacher" items="${teachers}">
-								<option value="${teacher.surname}">${teacher.surname}</option>
-							</c:forEach>
-						</select> <br>
-						<br> <label for="level"> <fmt:message key="level"
-								bundle="${ rb }" /></label><br>
-						<c:forEach var="level" items="${levels}">
-							<input type="radio" id="level" name="level" value="${level}"
-								required>
-							<c:out value="${level}" />
-							<br>
-						</c:forEach>
-						<br>
-						<label for="weekday"> <fmt:message key="weekday"
-								bundle="${ rb }" /></label><br>
-						<c:forEach var="weekday" items="${weekdays}">
-							<input type="checkbox" id="weekday" name="weekday"
-								value="${weekday}">
-							<fmt:message key="${weekday}" bundle="${ rb }" />
-							<br>
-						</c:forEach>
-						 <br> <label for="time"><fmt:message
-								key="time" bundle="${ rb }" /></label><br> <input type="time"
-							class="form-control" id="time" name="time" required> <label
-							for="duration"><fmt:message key="duration"
-								bundle="${ rb }" /></label><br> <input type="text"
-							class="form-control" id="duration" name="duration" required>
-						<br>
-						<button type="submit" class="btn btn-secondary pl-3"
-							name="command" value="CREATEGROUP">
-							<fmt:message key="register" bundle="${ rb }" />
-						</button>
-						<a class="btn btn-light text-dark"
-							href='<c:out value="${regLink}"/>'><fmt:message key="resert"
-								bundle="${ rb }" /></a>
-					</form>
-					<p class=success>
-						<c:out value="${successRegMessage}" />
-					</p>
-					<p class=error>
-						<c:out value="${errorRegMessage }" />
-					</p>
-					<p class="text-small">
-						<fmt:message key="comment" bundle="${ rb }" />
-					</p>
+			<div class=row>
+				<div class="col-lg-2">
+					<u:adminmenu />
 				</div>
-				<div class="col-sm-2 col-lg-4"></div>
+				<div class="col-lg-10">
+					<h1 class="subtitle">
+						<fmt:message key="registrationForm" bundle="${ rb }" />
+					</h1>
+					<div class="row">
+						<div class="col-sm-2 col-lg-4"></div>
+						<div class="col-sm-8 col-lg-4">
+							<form method="post" action="action" class="needs-validation">
+								<label for="group"><fmt:message key="group.title"
+										bundle="${ rb }" /></label><br> <input type="text"
+									class="form-control" id="group" name="group" required>
+								<p class=error>
+									<c:out value="${errorGroupTitleMessage}" />
+								</p>
+								<label for="teacher"> <fmt:message key="teacher"
+										bundle="${ rb }" /></label><br> <select id="teacher"
+									name="teacher">
+									<c:forEach var="teacher" items="${teachers}">
+										<option value="${teacher.surname}">${teacher.surname}</option>
+									</c:forEach>
+								</select> <br> <br> <label for="level"> <fmt:message
+										key="level" bundle="${ rb }" /></label><br>
+								<c:forEach var="level" items="${levels}">
+									<input type="radio" id="level" name="level" value="${level}"
+										required>
+									<c:out value="${level}" />
+									<br>
+								</c:forEach>
+								<br> <label for="weekday"> <fmt:message
+										key="weekday" bundle="${ rb }" /></label><br>
+								<c:forEach var="weekday" items="${weekdays}">
+									<input type="checkbox" id="weekday" name="weekday"
+										value="${weekday}">
+									<fmt:message key="${weekday}" bundle="${ rb }" />
+									<br>
+								</c:forEach>
+								<br> <label for="time"><fmt:message key="time"
+										bundle="${ rb }" /></label><br> <input type="time"
+									class="form-control" id="time" name="time" required> <label
+									for="duration"><fmt:message key="duration"
+										bundle="${ rb }" /></label><br> <input type="text"
+									class="form-control" id="duration" name="duration" required>
+								<br>
+								<button type="submit" class="btn btn-secondary pl-3"
+									name="command" value="CREATEGROUP">
+									<fmt:message key="register" bundle="${ rb }" />
+								</button>
+								<a class="btn btn-light text-dark"
+									href='<c:out value="${regLink}"/>'><fmt:message
+										key="resert" bundle="${ rb }" /></a>
+							</form>
+							<p class=success>
+								<c:out value="${successRegMessage}" />
+							</p>
+							<p class=error>
+								<c:out value="${errorRegMessage }" />
+							</p>
+							<p class="text-small">
+								<fmt:message key="comment" bundle="${ rb }" />
+							</p>
+						</div>
+						<div class="col-sm-2 col-lg-4"></div>
+					</div>
+				</div>F
 			</div>
+			</div>
+			<u:footer />
 		</div>
-		<u:footer />
-	</div>
 </body>
 </html>

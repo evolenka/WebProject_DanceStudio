@@ -101,6 +101,7 @@ public class ReadActiveDanceClassByDateTest {
 		Connection connection = ConnectionPool.getInstance().getConnection();
 		TransactionImpl transaction = new TransactionImpl(connection);
 		DaoFactory factory = DaoFactory.getInstance();
+		
 		List <DanceClass>  actual = factory.getDanceClassDao(transaction).readActiveByDate (date);
 		assertEquals(actual, expected);
 	}

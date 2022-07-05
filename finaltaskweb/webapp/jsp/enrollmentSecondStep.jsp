@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="<c:out value="${css}"/>">
 <c:url value="img/favicon.ico" var="icon" />
 <link rel="icon" href="<c:out value="${icon}"/>">
-<c:url value="enrollment1.jsp" var="enrollment1" />
+<c:url value="enrollmentFirstStep.jsp" var="enrollmentFirstStep" />
 </head>
 <body>
 	<div class="wrapper">
@@ -102,10 +102,7 @@
 								<fmt:message key="back" bundle="${ rb }" />
 							</a>
 					</c:if>
-					<p>
-						<c:out value="${errorNoSession}" />
-					</p>
-				</div>
+					</div>
 				</div>
 			</div>
 		</div>

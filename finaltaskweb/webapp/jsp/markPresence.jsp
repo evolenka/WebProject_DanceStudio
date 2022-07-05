@@ -30,7 +30,7 @@
 			<div class=row>
 				<div class="col-lg-12">
 					<h1 class="subtitle" style="margin-bottom: 50px">
-						<fmt:message key="markPresence.unmarkedDanceClass"/>
+						<fmt:message key="markPresence.unmarkedDanceClass" />
 					</h1>
 				</div>
 				<div class="col-lg-2">
@@ -100,9 +100,6 @@
 					<c:if test="${empty plannedVisits}">
 						<fmt:message key="noUnmarkedClasses" bundle="${ rb }" />
 					</c:if>
-					<p>
-						<c:out value="${errorNoSession}" />
-					</p>
 				</div>
 			</div>
 		</div>

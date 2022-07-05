@@ -1,6 +1,5 @@
 package by.jwd.finaltaskweb.controller.impl;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.LogManager;
@@ -8,6 +7,8 @@ import org.apache.logging.log4j.Logger;
 
 import by.jwd.finaltaskweb.controller.Command;
 import by.jwd.finaltaskweb.controller.ConfigurationManager;
+import by.jwd.finaltaskweb.controller.PageResult;
+import by.jwd.finaltaskweb.controller.SessionRequestContent;
 
 /**
  * LogoutCommandImpl implements command for logging out the private account
@@ -20,16 +21,18 @@ public class LogoutCommandImpl implements Command {
 	private static Logger logger = LogManager.getLogger(LogoutCommandImpl.class);
 
 	@Override
-	public String execute(HttpServletRequest request) {
-
-		HttpSession session = request.getSession(false);
+	public PageResult execute(SessionRequestContent content)  {
+		
+		
+		HttpSession session = content.getRequest().getSession(false);
 
 		if (session != null) {
 			session.invalidate();
 		}
 		logger.debug("user has been logged out");
+		logger.debug("session {}", content.getRequest().getSession(false));
 
-		return ConfigurationManager.getProperty("path.page.index");
+		return new PageResult (ConfigurationManager.getProperty("path.page.index"), false);
 
 	}
 }

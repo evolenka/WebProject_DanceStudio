@@ -9,7 +9,7 @@
 	value="${not empty param.language ? param.language : not empty language ? language : pageContext.request.locale.language}"
 	scope="session" />
 <fmt:setLocale value="${language}" />
-<fmt:setBundle basename="pagecontent" var="rb"/>
+<fmt:setBundle basename="pagecontent" var="rb" />
 <html lang="${language}">
 <head>
 <title>Dance studio</title>
@@ -75,11 +75,8 @@
 					</c:if>
 				</div>
 			</div>
-			<p>
-			<c:out value="${errorNoSession}" />
-		</p>
-	</div>
-	<u:footer />
+		</div>
+		<u:footer />
 	</div>
 </body>
 </html>

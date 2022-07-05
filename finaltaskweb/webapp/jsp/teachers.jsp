@@ -47,16 +47,16 @@
 		<u:mainmenu />
 		<div class="content conteiner-fluid">
 			<div class=row>
-			<div class="col-lg-12">
-			<h1 class="subtitle">
+				<div class="col-lg-12">
+					<h1 class="subtitle">
 						<fmt:message key="teachers" bundle="${ rb }" />
 					</h1>
-					</div>
+				</div>
 				<div class="col-lg-2">
 					<u:adminmenu />
 				</div>
 				<div class="col-lg-10">
-						<c:if test="${not empty teachers}">
+					<c:if test="${not empty teachers}">
 						<a class="btn colorBtn"
 							href='<c:out value="${teacherRegistration}"/>'> <fmt:message
 								key="addClient" bundle="${ rb }" />
@@ -104,9 +104,6 @@
 							</table>
 						</div>
 					</c:if>
-					<p>
-						<c:out value="${errorNoSession}" />
-					</p>
 				</div>
 			</div>
 		</div>
