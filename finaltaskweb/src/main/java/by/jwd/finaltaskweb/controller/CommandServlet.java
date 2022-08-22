@@ -102,9 +102,7 @@ public class CommandServlet extends HttpServlet {
 			}
 		} else {
 			/*page with message error*/
-			String language = (String) content.getSessionAttribute("language");
 			page = ConfigurationManager.getProperty("path.page.error");
-			request.setAttribute("errorMessage", MessageManager.getProperty("errorMessage", language));
 			response.sendRedirect(request.getContextPath() + page);
 		}
 	}

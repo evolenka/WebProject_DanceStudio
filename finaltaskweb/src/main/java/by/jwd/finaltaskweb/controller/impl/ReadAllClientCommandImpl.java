@@ -71,7 +71,7 @@ public class ReadAllClientCommandImpl implements Command {
 				content.setRequestAttribute("currentPage", currentPage);
 
 				result = new PageResult(ConfigurationManager.getProperty("path.page.clients"), false);
-			}
+			} 
 		} catch (ServiceException e) {
 			content.setRequestParameter("errorMessage", MessageManager.getProperty("errorMessage", language));
 			result = new PageResult(ConfigurationManager.getProperty("path.page.error"), false);

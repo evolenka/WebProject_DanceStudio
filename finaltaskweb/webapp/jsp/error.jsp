@@ -42,7 +42,7 @@
 				</div>
 				<div class="col-lg-10" style="margin-top: 30px">
 					<h5>
-					<c:out value="${errorMessage}"></c:out>
+					<fmt:message key="errorMessage" bundle="${ rb }" />
 					</h5>
 				</div>
 				
