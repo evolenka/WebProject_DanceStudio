@@ -53,7 +53,7 @@ public class ReadValidMembershipsByClientCommandImpl implements Command {
 					content.setSessionAttribute("memberships", validMemberships);
 				} else {
 					logger.debug("no valid memberships");
-					content.setSessionAttribute("noMemberships",
+					content.setRequestParameter("noMemberships",
 							MessageManager.getProperty("myMemberships.noMembership", language));
 				}
 			}

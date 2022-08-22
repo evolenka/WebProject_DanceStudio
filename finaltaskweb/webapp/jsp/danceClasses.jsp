@@ -30,20 +30,21 @@
 			<div class=row>
 				<div class="col-lg-12">
 					<h1 class="subtitle">
-						<fmt:message key="closeForEnrollment" bundle="${ rb }" />
+						<fmt:message key="viewEnrolledClients" bundle="${ rb }" />
 					</h1>
 				</div>
 				<div class="col-lg-2">
 					<u:adminmenu />
-				</div>
+				</div>  
 				<div class="col-lg-10">
 					<h5>
 						<fmt:message key="chooseDate" bundle="${ rb }" />
 					</h5>
-					<form method="post" action="action">
-						<c:set var="currentdate">
+					<c:set var="currentdate">
 							<ctg:currentdate />
 						</c:set>
+					<form method="post" action="action">
+						 
 						<input type="date" name="classDate"
 							value=${not empty classDate ? classDate : currentdate} required>
 						<br>
@@ -52,41 +53,52 @@
 							<fmt:message key="choose" bundle="${ rb }" />
 						</button>
 					</form>
-					<form method="post" action="action">
-						<c:if test="${not empty danceClasses}">
 
-							<table>
+					<c:if test="${not empty danceClasses}">
+					
+						<table>
+							<tr>
+								<th></th>
+
+								<th id=group class="rowgroup"><fmt:message key="time"
+										bundle="${ rb }" /></th>
+								<th id=group class="rowgroup"><fmt:message key="group"
+										bundle="${ rb }" /></th>
+								<th></th>
+								<th></th>
+							</tr>
+							<c:forEach var="danceClass" items="${danceClasses}">
+
 								<tr>
-									<th></th>
-									<th><fmt:message key="date" bundle="${ rb }" /></th>
-									<th id=group class="rowgroup"><fmt:message key="time"
-											bundle="${ rb }" /></th>
-									<th id=group class="rowgroup"><fmt:message key="group"
-											bundle="${ rb }" /></th>
-									<th></th>
-								</tr>
-								<c:forEach var="danceClass" items="${danceClasses}">
-									<tr>
-										<td class="pt-3"><input type="radio" id="danceClassId"
-											name="danceClassId" value="${danceClass.id}" required /></td>
-										<td class="pt-3"><c:out
-												value="${danceClass.schedule.time}" /></td>
-										<td class="pt-3"><c:out
-												value="${danceClass.schedule.group.title}" /></td>
+									<td><input type="radio" required /></td>
 
-										<td>
+									<td><input type=hidden id="time" name="time"
+										value="${danceClass.schedule.time}" /> <c:out
+											value="${danceClass.schedule.time}" /></td>
+									<td><input type=hidden id="group" name="group"
+										value="${danceClass.schedule.group.title}" /> <c:out
+											value="${danceClass.schedule.group.title}" /></td>
+									<td>
+										<form method="post" action="action">
+											<input type=hidden id="danceClassId" name="danceClassId"
+												value="${danceClass.id}" /> <input type=hidden id="time"
+												name="time" value="${danceClass.schedule.time}" /> <input
+												type=hidden id="group" name="group"
+												value="${danceClass.schedule.group.title}" />
+
 											<button type="submit" class="btn colorBtn" name="command"
-												value="CLOSEENROLLMENT">
-												<fmt:message key="closeForEnrollment" bundle="${ rb }" />
+												value="READCLIENTSBYDANCECLASS">
+												<fmt:message key="enrolledClients" bundle="${ rb }" />
 											</button>
-										</td>
-									</tr>
-								</c:forEach>
-							</table>
-						</c:if>
-					</form>
+										</form>
+									</td>
+
+								</tr>
+							</c:forEach>
+						</table>
+					</c:if>
 					<p>
-						<c:out value="${noClasses}" />
+					<c:out value="${noClasses}"></c:out>
 					</p>
 				</div>
 			</div>

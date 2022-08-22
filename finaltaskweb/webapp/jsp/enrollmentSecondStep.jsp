@@ -34,11 +34,11 @@
 				</div>
 				<div class="col-lg-10">
 					<h1 class="subtitle">
-					<fmt:message key="clientMain.enrollment" bundle="${ rb }" />
+						<fmt:message key="clientMain.enrollment" bundle="${ rb }" />
 					</h1>
-						<h5>
-							<fmt:message key="enrollment.secondStep" bundle="${ rb }" />
-						</h5>
+					<h5>
+						<fmt:message key="enrollment.secondStep" bundle="${ rb }" />
+					</h5>
 					<c:if test="${not empty groups}">
 						<form method="post" action="action">
 							<div class="table-responsive">
@@ -86,10 +86,10 @@
 									</tbody>
 								</table>
 							</div>
-							<a class="btn  colorBtn" href='<c:out value="${enrollment1}"/>'>
-								<fmt:message key="back" bundle="${ rb }" />
-							</a>
-							<input type=hidden name = page value = enrollment3>
+							<a class="btn  colorBtn"
+								href='<c:out value="${enrollmentFirstStep}"/>'> <fmt:message
+									key="back" bundle="${ rb }" />
+							</a> 
 							<button type="submit" class="btn colorBtn" name="command"
 								value="MYVALIDMEMBERSHIPS">
 								<fmt:message key="next" bundle="${ rb }" />
@@ -97,15 +97,14 @@
 						</form>
 					</c:if>
 					<c:if test="${empty groups}">
-						<p><fmt:message key="enrollment.noGroupsMessage" bundle="${ rb }" /></p>
-						<a class="btn  colorBtn" href='<c:out value="${enrollment1}"/>'>
-								<fmt:message key="back" bundle="${ rb }" />
-							</a>
+						<p>
+							<fmt:message key="enrollment.noGroupsMessage" bundle="${ rb }" />
+						</p>
 					</c:if>
-					</div>
 				</div>
 			</div>
 		</div>
-		<u:footer />
+	</div>
+	<u:footer />
 </body>
 </html>

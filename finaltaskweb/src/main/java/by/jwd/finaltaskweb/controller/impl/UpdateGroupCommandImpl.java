@@ -90,7 +90,7 @@ public class UpdateGroupCommandImpl implements Command {
 					logger.debug("group has been updated");
 
 				} else {
-					content.setRequestParameter("errorMessage", MessageManager.getProperty("errorMessage", language));
+					content.setSessionAttribute("errorMessage", MessageManager.getProperty("errorMessage", language));
 				}
 
 				result = new PageResult(ConfigurationManager.getProperty("path.page.updateGroup"), true);

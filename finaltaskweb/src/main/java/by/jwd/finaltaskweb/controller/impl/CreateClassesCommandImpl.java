@@ -53,7 +53,7 @@ public class CreateClassesCommandImpl implements Command {
 				}
 
 				if (factory.getDanceClassService().createClassesByDateAndGroups(date, groupsId)) {
-					content.setSessionAttribute("successCreateClassMessage",
+					content.setRequestAttribute("successCreateClassMessage",
 							MessageManager.getProperty("successCreateClassMessage", language));
 				} else {
 					content.setSessionAttribute("errorRegMessage",

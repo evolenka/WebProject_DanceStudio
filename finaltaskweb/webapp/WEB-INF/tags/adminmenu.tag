@@ -47,7 +47,7 @@
 
 		<li class="nav-item"><a class="btn clientMenuBtn btn-light"
 			href='<c:out value="${danceClasses}"/>'><fmt:message
-					key="closeForEnrollment" bundle="${ rb }" /><br> </a></li>
+					key="viewEnrolledClients" bundle="${ rb }" /><br> </a></li>
 
 		<li class="nav-item"><a class="btn clientMenuBtn btn-light"
 			href='<c:out value="${visitStatistics}"/>'><fmt:message

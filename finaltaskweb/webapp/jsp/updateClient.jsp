@@ -48,7 +48,16 @@
 						<fmt:message key="clientMain.updateClient" bundle="${ rb }" />
 					</h1>
 					<div class="row">
-						<div class="col-sm-2 col-lg-4"></div>
+						<div class="col-sm-2 col-lg-4">
+							<c:choose>
+								<c:when test="${role == 'CLIENT'}">
+									<u:clientmenu />
+								</c:when>
+								<c:when test="${role == 'ADMIN'}">
+									<u:adminmenu />
+								</c:when>
+							</c:choose>
+						</div>
 						<div class="col-sm-8 col-lg-4">
 							<form method="post" action="action" class="needs-validation">
 								<label for="surname"><fmt:message

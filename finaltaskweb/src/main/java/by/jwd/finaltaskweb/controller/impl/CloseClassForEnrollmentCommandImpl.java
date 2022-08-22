@@ -40,7 +40,7 @@ public class CloseClassForEnrollmentCommandImpl implements Command {
 		Integer adminId = (Integer)(content.getSessionAttribute("adminId"));
 		logger.debug("adminId {}", adminId);
 
-		Integer danceClassId = Integer.parseInt(content.getRequestParameter("danceClassId"));
+		Integer danceClassId = (Integer)(content.getSessionAttribute("danceClassId"));
 		logger.debug(danceClassId);
 
 		try {
@@ -57,10 +57,10 @@ public class CloseClassForEnrollmentCommandImpl implements Command {
 					content.setSessionAttribute("danceClasses", danceClasses);
 					if (danceClasses.isEmpty()) {
 						
-						content.setSessionAttribute("noClasses", MessageManager.getProperty("noClasses", language));
+						content.setRequestAttribute("noClasses", MessageManager.getProperty("noClasses", language));
 					}
 
-					result = new PageResult(ConfigurationManager.getProperty("path.page.danceClasses"), true);
+					result = new PageResult(ConfigurationManager.getProperty("path.page.danceClasses"), false);
 				}
 			}
 		} catch (ServiceException e) {

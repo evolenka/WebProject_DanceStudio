@@ -55,6 +55,7 @@ public class CreateMembershipCommandImpl implements Command {
 
 				if (factory.getMembershipService().create(membership)) {
 				 content.setSessionAttribute("successPurchaseMessage", MessageManager.getProperty("successPurchaseMessage", language));
+				 logger.debug("message {}",content.getRequestParameter("successPurchaseMessage"));
 				} else {
 					content.setSessionAttribute("errorPurchaseMessage", MessageManager.getProperty("errorPurchaseMessage", language));
 				}

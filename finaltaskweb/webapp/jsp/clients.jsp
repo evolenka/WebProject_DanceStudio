@@ -23,6 +23,7 @@
 <c:url value="img/favicon.ico" var="icon" />
 <link rel="icon" href="<c:out value="${icon}"/>">
 
+
 <script
 	src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
 <script
@@ -33,14 +34,12 @@
 <c:url value="registration.jsp" var="registration" />
 
 <script>
-	function confirm() {
-		if (confirm("Are you sure?/Вы уверены?")) {
-			return false;
-		} else {
-			return true;
-		}
+	function confirmDelete(e) {
+		if (!confirm('Are you sure?/Вы уверены?'))
+			e.preventDefault();
 	}
 </script>
+
 </head>
 <body>
 	<div class="wrapper">
@@ -95,7 +94,7 @@
 											<td><form method="post" action="action">
 													<input type="hidden" name="clientId" value="${client.id}">
 													<button type="submit" class="btn colorBtn" name="command"
-														value="DELETECLIENT" onclick="confirm()">
+														value="DELETECLIENT" onclick="return confirm('Are you sure?/Вы уверены?')">
 														<fmt:message key="delete" bundle="${ rb }" />
 													</button>
 												</form></td>

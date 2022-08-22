@@ -35,9 +35,9 @@
 <script>
 	function confirmDelete() {
 		if (confirm("Are you sure?/Вы уверены?")) {
-			return false;
-		} else {
 			return true;
+		} else {
+			return false;
 		}
 	}
 </script>
@@ -94,7 +94,7 @@
 											<td><form method="post" action="action">
 													<input type="hidden" name="teacherId" value="${teacher.id}">
 													<button type="submit" class="btn colorBtn" name="command"
-														value="DELETETEACHER" onclick="confirmDelete()">
+														value="DELETETEACHER" onclick="return confirm('Are you sure?/Вы уверены?')">
 														<fmt:message key="delete" bundle="${ rb }" />
 													</button>
 												</form></td>

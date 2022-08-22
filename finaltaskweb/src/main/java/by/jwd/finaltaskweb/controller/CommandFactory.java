@@ -35,6 +35,7 @@ import by.jwd.finaltaskweb.controller.impl.ReadAllStyleCommandImpl;
 import by.jwd.finaltaskweb.controller.impl.ReadAllTeacherCommandImpl;
 import by.jwd.finaltaskweb.controller.impl.ReadAllTeacherByAdminCommandImpl;
 import by.jwd.finaltaskweb.controller.impl.ReadAllWeekDayCommandImpl;
+import by.jwd.finaltaskweb.controller.impl.ReadClientsByDanceClassCommandImpl;
 import by.jwd.finaltaskweb.controller.impl.ReadGroupForEnrollmentByDateCommandImpl;
 import by.jwd.finaltaskweb.controller.impl.ReadGroupsByDateCommandImpl;
 import by.jwd.finaltaskweb.controller.impl.ReadGroupByLevelCommandImpl;
@@ -114,6 +115,7 @@ public class CommandFactory {
 		commands.put(CommandEnum.CONFIRMVISIT, new ConfirmVisitCommandImpl());
 		commands.put(CommandEnum.READPLANNEDCLASSESBYTEACHER, new ReadPlannedClassesByTeacherCommandImpl());
 		commands.put(CommandEnum.MARKPRESENCE, new UpdateVisitStatusCommandImpl());
+		commands.put(CommandEnum.READCLIENTSBYDANCECLASS, new ReadClientsByDanceClassCommandImpl());
 		commands.put(CommandEnum.CLOSEENROLLMENT, new CloseClassForEnrollmentCommandImpl());
 		commands.put(CommandEnum.CANCELMARKEDPRESENCE, new CancelUpdateStatusCommandImpl());
 		commands.put(CommandEnum.READVISITSBYGROUPANDDATE, new ReadDanceClassByGroupAndDateCommandImpl());

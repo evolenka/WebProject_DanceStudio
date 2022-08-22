@@ -1,6 +1,7 @@
 package by.jwd.finaltaskweb.controller.impl;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -40,7 +41,9 @@ public class ReadActiveClassesByDateComandImpl implements Command {
 		Integer adminId = (Integer)(content.getSessionAttribute("adminId"));
 		logger.debug("adminId {}", adminId);
 
-		LocalDate date = LocalDate.parse(content.getRequestParameter("classDate"));
+		
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		LocalDate date = LocalDate.parse(content.getRequestParameter("classDate"), formatter);
 		logger.debug("date {}", date);
 		
 		content.setSessionAttribute("classDate", date);
@@ -51,9 +54,9 @@ public class ReadActiveClassesByDateComandImpl implements Command {
 				List<DanceClass> danceClasses = factory.getDanceClassService().readActiveByDate(date);
 
 				if (!danceClasses.isEmpty()) {
-					content.setSessionAttribute("danceClasses", danceClasses);
+					content.setRequestAttribute("danceClasses", danceClasses);
 				} else {
-					content.setSessionAttribute("noClasses", MessageManager.getProperty("noClasses", language));
+					content.setRequestAttribute("noClasses", MessageManager.getProperty("noClasses", language));
 				}
 
 				result = new PageResult(ConfigurationManager.getProperty("path.page.danceClasses"), false);

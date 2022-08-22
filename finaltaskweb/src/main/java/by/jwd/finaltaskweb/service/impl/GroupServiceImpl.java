@@ -77,10 +77,12 @@ public class GroupServiceImpl extends StudioServiceImpl implements GroupService 
 	@Override
 	public boolean delete(Integer id) throws ServiceException {
 		try {
-			Group group = factory.getGroupDao(transaction).readEntityById(id);
+					
+			List <Schedule> schedules = factory.getScheduleDao(transaction).readByGroup(id);
 			
-			for (Schedule schedule : group.getSchedule()) {
+			for (Schedule schedule : schedules) {
 						factory.getScheduleDao(transaction).delete(schedule.getId());
+						logger.debug("schedule for group has been deleted");
 			}
 			factory.getGroupDao(transaction).delete(id);
 			

@@ -27,12 +27,25 @@
 		<u:mainmenu />
 		<div class="content conteiner-fluid">
 			<div class=row>
-				<div class="col-lg-8" style="align-items: flex-end">
+				<div class="col-lg-2">
+					<c:choose>
+						<c:when test="${role == 'CLIENT'}">
+							<u:clientmenu />
+						</c:when>
+						<c:when test="${role == 'TEACHER'}">
+							<u:teachermenu />
+						</c:when>
+						<c:when test="${role == 'ADMIN'}">
+							<u:adminmenu />
+						</c:when>
+					</c:choose>
+				</div>
+				<div class="col-lg-10" style="margin-top: 30px">
 					<h5>
 					<c:out value="${errorMessage}"></c:out>
 					</h5>
 				</div>
-				<div class="col-lg-4"></div>
+				
 			</div>
 		</div>
 		<u:footer />

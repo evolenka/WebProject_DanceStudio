@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="<c:out value="${css}"/>">
 <c:url value="img/favicon.ico" var="icon" />
 <link rel="icon" href="<c:out value="${icon}"/>">
-<c:url value="enrollmentSecondStep.jsp" var="enrollmentSecondStep.jsp" />
+<c:url value="enrollmentSecondStep.jsp" var="enrollmentSecondStep" />
 </head>
 <body>
 	<div class="wrapper">
@@ -69,7 +69,7 @@
 									</tr>
 								</c:forEach>
 							</table>
-							<a class="btn  colorBtn" href='<c:out value="${enrollment2}"/>'>
+							<a class="btn  colorBtn" href='<c:out value="${enrollmentSecondStep}"/>'>
 								<fmt:message key="back" bundle="${ rb }" />
 							</a>
 							<button type="submit" class="btn colorBtn" name="command"
@@ -91,9 +91,7 @@
 							</p>
 						</form>
 					</c:if>
-					<p>
-						<c:out value="${noMemberships}" />
-					</p>
+					
 				</div>
 			</div>
 		</div>

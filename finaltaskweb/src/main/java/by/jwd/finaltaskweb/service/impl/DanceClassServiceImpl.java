@@ -290,4 +290,28 @@ public class DanceClassServiceImpl extends StudioServiceImpl implements DanceCla
 		}
 		return res;
 	}
+
+	@Override
+	public List<Client> readAllEnrolledClients(Integer danceClassId) throws ServiceException {
+		List<Visit> visits = null;
+		List<Client> clients = new ArrayList<>();
+
+		try {
+			DanceClass danceClass = factory.getDanceClassDao(transaction).readEntityById(danceClassId);
+			logger.debug("danceClass {}", danceClass);
+			visits = factory.getVisitDao(transaction).readByDanceClass(danceClass);
+
+			for (Visit visit : visits) {
+				Membership membership = factory.getMembershipDao(transaction).readEntityById(visit.getMembership().getId());
+				Client client = (Client) factory.getUserDao(transaction).readEntityById(membership.getClient().getId());
+				logger.debug("client {}", client);
+				clients.add(client);
+			}
+			transaction.close();
+
+		} catch (DaoException e) {
+			throw new ServiceException();
+		}
+		return clients;
+	}
 }

@@ -3,6 +3,7 @@ package by.jwd.finaltaskweb.service;
 import java.time.LocalDate;
 import java.util.List;
 
+import by.jwd.finaltaskweb.entity.Client;
 import by.jwd.finaltaskweb.entity.DanceClass;
 
 public interface DanceClassService extends StudioService<Integer, DanceClass> {
@@ -20,4 +21,6 @@ public interface DanceClassService extends StudioService<Integer, DanceClass> {
 	public List<DanceClass> readActiveByDate(LocalDate date) throws ServiceException;
 
 	public boolean changeForNoActive(Integer danceClassId) throws ServiceException;
+
+	public List<Client> readAllEnrolledClients(Integer danceClassId) throws ServiceException;
 }
